@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1a4d2e;
+  --font-heading: 'Anton', impact, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap');
+
+body {
+  font-family: var(--font-body);
+  background-color: white;
+  color: #1a1a1a;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+.btn {
+  @apply inline-block px-6 py-3 bg-green-800 text-white rounded-full font-bold uppercase transition-all duration-300 hover:bg-green-700 hover:-translate-y-1;
+}

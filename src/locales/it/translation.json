@@ -1,0 +1,72 @@
+{
+    "header": {
+        "barbers": "Barbieri",
+        "treatments": "Trattamenti",
+        "news": "Novità",
+        "contact": "Contatti",
+        "book_appointment": "Prenota"
+    },
+    "hero": {
+        "title": "Cura Classica per il Gentiluomo Moderno",
+        "subtitle": "Vivi l'arte della barberia tradizionale in un'atmosfera rilassata e premium. Non tagliamo solo i capelli, coltiviamo lo stile.",
+        "book_cut": "Prenota il Tuo Taglio",
+        "watch_video": "Guarda il Video"
+    },
+    "intro": {
+        "title": "La Qualità è Orgoglio<br>di Artigianato",
+        "text": "Da Silla Barber Shop, crediamo che un taglio di capelli non sia solo un servizio—è un'esperienza. I nostri maestri barbieri fondono tecniche tradizionali con tendenze moderne per creare un look unicamente tuo. Dalla rasatura con panno caldo alle sfumature di precisione, siamo orgogliosi di ogni dettaglio.",
+        "rating": "Valutazione",
+        "years_exp": "Anni di Esp.",
+        "master_barber": "Maestro Barbiere"
+    },
+    "services": {
+        "title": "Trattamenti",
+        "cuts": {
+            "name": "01 Tagli",
+            "desc": "Taglio di precisione, lavaggio e styling"
+        },
+        "beard": {
+            "name": "02 Barba",
+            "desc": "Rasatura con panno caldo o rifinitura"
+        },
+        "combo": {
+            "name": "03 Combo",
+            "desc": "Taglio Capelli & Barba"
+        },
+        "kids": {
+            "name": "04 Bambini",
+            "desc": "Sotto i 12 anni"
+        },
+        "book_appointment": "Prenota Appuntamento"
+    },
+    "team": {
+        "title": "Incontra i Nostri Barbieri",
+        "roles": {
+            "head_barber": "Capo Barbiere",
+            "stylist": "Stilista",
+            "barber": "Barbiere",
+            "junior": "Junior"
+        }
+    },
+    "reviews": {
+        "title": "Recensioni",
+        "review_1": "Il miglior taglio che abbia avuto in anni. L'attenzione ai dettagli è impareggiabile.",
+        "review_2": "Comprato un set regalo per mio marito e lo adora. Ottimi prodotti!",
+        "review_3": "Grande atmosfera, caffè eccellente e servizio professionale."
+    },
+    "news": {
+        "title": "Ultime Novità",
+        "read_blog": "Leggi il Blog",
+        "item_1": "Prodotti e Regali da Silla",
+        "item_2": "Formazione Baristi",
+        "item_3": "Apertura Nuova Sede Presto"
+    },
+    "footer": {
+        "address": "Indirizzo",
+        "hours": "Orari",
+        "contact": "Contatti",
+        "mon_sat": "Lunedì - Sabato",
+        "sunday": "Domenica",
+        "closed": "Chiuso"
+    }
+}

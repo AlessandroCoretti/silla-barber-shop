@@ -1,0 +1,72 @@
+{
+    "header": {
+        "barbers": "Barbers",
+        "treatments": "Treatments",
+        "news": "News",
+        "contact": "Contact",
+        "book_appointment": "Book Appointment"
+    },
+    "hero": {
+        "title": "Classic Grooming for the Modern Gentleman",
+        "subtitle": "Experience the art of traditional barbering in a relaxed, premium atmosphere. We don't just cut hair, we cultivate style.",
+        "book_cut": "Book Your Cut",
+        "watch_video": "Watch Video"
+    },
+    "intro": {
+        "title": "Quality is Pride<br>of Workmanship",
+        "text": "At Silla Barber Shop, we believe that a haircut is not just a service—it's an experience. Our master barbers blend traditional techniques with modern trends to create a look that is uniquely yours. From hot towel shaves to precision fades, we take pride in every detail.",
+        "rating": "Rating",
+        "years_exp": "Years Exp.",
+        "master_barber": "Master Barber"
+    },
+    "services": {
+        "title": "Treatments",
+        "cuts": {
+            "name": "01 Cuts",
+            "desc": "Precision haircut, wash & style"
+        },
+        "beard": {
+            "name": "02 Beard",
+            "desc": "Hot towel shave or trim"
+        },
+        "combo": {
+            "name": "03 Combo",
+            "desc": "Haircut & Beard trim"
+        },
+        "kids": {
+            "name": "04 Kids",
+            "desc": "Under 12 years old"
+        },
+        "book_appointment": "Book Appointment"
+    },
+    "team": {
+        "title": "Meet Our Barbers",
+        "roles": {
+            "head_barber": "Head Barber",
+            "stylist": "Stylist",
+            "barber": "Barber",
+            "junior": "Junior"
+        }
+    },
+    "reviews": {
+        "title": "Reviews",
+        "review_1": "Best haircut I've had in years. The attention to detail is unmatched.",
+        "review_2": "Bought a gift set for my husband and he loves it. Great products!",
+        "review_3": "Great atmosphere, excellent coffee, and professional service."
+    },
+    "news": {
+        "title": "Latest News",
+        "read_blog": "Read Blog",
+        "item_1": "Products and Gifts at Silla",
+        "item_2": "Barista Training",
+        "item_3": "New Location Opening Soon"
+    },
+    "footer": {
+        "address": "Address",
+        "hours": "Hours",
+        "contact": "Contact",
+        "mon_sat": "Monday - Saturday",
+        "sunday": "Sunday",
+        "closed": "Closed"
+    }
+}
