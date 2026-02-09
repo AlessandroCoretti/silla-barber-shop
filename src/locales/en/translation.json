@@ -46,13 +46,17 @@
             "stylist": "Stylist",
             "barber": "Barber",
             "junior": "Junior"
-        }
+        },
+        "discover_more": "Discover more about"
     },
     "reviews": {
         "title": "Reviews",
-        "review_1": "Best haircut I've had in years. The attention to detail is unmatched.",
-        "review_2": "Bought a gift set for my husband and he loves it. Great products!",
-        "review_3": "Great atmosphere, excellent coffee, and professional service."
+        "review_1": "Serious, prepared and reliable. A true Barber where you find every men's service done impeccably. Recommended.",
+        "review_2": "Great service, really kind staff, I came here after a home experiment went wrong. They know how to put you at ease, you can also book from the site.",
+        "review_3": "Speed, punctuality, attention to detail and skill at an honest price!",
+        "review_4": "It had been about 4 years since I went to a barber... struck by the professional service and comfortable environment... The guys managed to advise me on the right cut... I will definitely return!",
+        "review_5": "TOP Barber Shop. Very elegant, bright and above all clean. The owner Emanuele Silla together with the guys Riccardo and Stefano are true professionals... I highly recommend coming here!",
+        "review_6": "Kind, always smiling, available, but above all good! In particular Stefano really knows how to deal with children!"
     },
     "news": {
         "title": "Latest News",
@@ -65,8 +69,19 @@
         "address": "Address",
         "hours": "Hours",
         "contact": "Contact",
-        "mon_sat": "Monday - Saturday",
+        "tue_sat": "Tuesday - Saturday",
+        "monday": "Monday",
         "sunday": "Sunday",
-        "closed": "Closed"
+        "closed": "Closed",
+        "hours_value": "9 AM – 1 PM, 2 PM – 7 PM"
+    },
+    "products": {
+        "title": "Products and Gifts",
+        "text": "Take the Silla experience home with you. We offer a curated selection of premium grooming products, from pomades and beard oils to safety razors and gift sets. Perfect for maintaining your look between visits or as a thoughtful gift for a gentleman."
+    },
+    "coffee": {
+        "title": "Coffee To-Go and Chill",
+        "text": "It's not just about the cut, it's about the connection. Arrive early or stay late to enjoy our signature espresso blend. Whether you need a morning kick or a relaxing break, our barista station is always open for our clients. Free coffee with every service.",
+        "read_more": "Read More"
     }
 }

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTranslation } from 'react-i18next';
 
 const Coffee = () => {
+    const { t } = useTranslation();
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -35,15 +37,13 @@ const Coffee = () => {
                 </div>
 
                 <div className="coffee-content w-full md:w-1/2">
-                    <h2 className="text-4xl font-bold uppercase mb-6">Coffee To-Go and Chill</h2>
+                    <h2 className="text-4xl font-bold uppercase mb-6">{t('coffee.title')}</h2>
                     <p className="mb-6 text-gray-600 leading-relaxed">
-                        It's not just about the cut, it's about the connection. Arrive early or stay late to enjoy our signature
-                        espresso blend. Whether you need a morning kick or a relaxing break, our barista station is always open
-                        for our clients. Free coffee with every service.
+                        {t('coffee.text')}
                     </p>
                     <div className="flex gap-4">
                         <button className="btn bg-green-800 hover:bg-green-700">
-                            Read More
+                            {t('coffee.read_more')}
                         </button>
                     </div>
                 </div>

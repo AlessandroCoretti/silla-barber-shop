@@ -46,13 +46,17 @@
             "stylist": "Stilista",
             "barber": "Barbiere",
             "junior": "Junior"
-        }
+        },
+        "discover_more": "Scopri di più su"
     },
     "reviews": {
         "title": "Recensioni",
-        "review_1": "Il miglior taglio che abbia avuto in anni. L'attenzione ai dettagli è impareggiabile.",
-        "review_2": "Comprato un set regalo per mio marito e lo adora. Ottimi prodotti!",
-        "review_3": "Grande atmosfera, caffè eccellente e servizio professionale."
+        "review_1": "Seri, preparati ed affidabili. Un vero Barber dove trovi ogni servizio da uomo e fatto in maniera impeccabile. Consigliati",
+        "review_2": "Ottimo servizio, staff davvero gentile, son venuto qua dopo un esperimento casalingo andato a male. Ti sanno mettere a tuo agio, si può anche prenotare dal sito.",
+        "review_3": "Velocità, puntualità, cura dei dettagli e bravura a prezzo onesto!",
+        "review_4": "Erano circa 4 anni che non andavo da un barbiere... rimasto colpito dal servizio professionale e dall'ambiente confortevole... I ragazzi sono riusciti a consigliarmi il taglio giusto... tornerò sicuramente!",
+        "review_5": "Barberia TOP. Molto elegante, luminosa e sopratutto pulita. Il titolare Emanuele Silla insieme ai ragazzi Riccardo e Stefano sono veri professionisti... Consiglio vivamente di venire qui!",
+        "review_6": "Gentili, sempre sorridenti, disponibili, ma soprattutto bravi! In particolare Stefano ci sa davvero fare con i bambini!"
     },
     "news": {
         "title": "Ultime Novità",
@@ -65,8 +69,19 @@
         "address": "Indirizzo",
         "hours": "Orari",
         "contact": "Contatti",
-        "mon_sat": "Lunedì - Sabato",
+        "tue_sat": "Martedì - Sabato",
+        "monday": "Lunedì",
         "sunday": "Domenica",
-        "closed": "Chiuso"
+        "closed": "Chiuso",
+        "hours_value": "09–13, 14–19"
+    },
+    "products": {
+        "title": "Prodotti e Regali",
+        "text": "Porta l'esperienza Silla a casa con te. Offriamo una selezione curata di prodotti premium per la cura della persona, da pomate e oli per barba a rasoi di sicurezza e set regalo. Perfetto per mantenere il tuo look tra una visita e l'altra o come pensiero gentile per un gentiluomo."
+    },
+    "coffee": {
+        "title": "Caffè To-Go e Relax",
+        "text": "Non si tratta solo del taglio, ma della connessione. Arriva presto o fermati dopo per goderti la nostra miscela di espresso firmata. Che tu abbia bisogno di una carica mattutina o di una pausa rilassante, la nostra postazione bar è sempre aperta per i nostri clienti. Caffè gratuito con ogni servizio.",
+        "read_more": "Leggi di più"
     }
 }

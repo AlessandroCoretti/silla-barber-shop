@@ -9,9 +9,12 @@ const Reviews = () => {
     const sectionRef = useRef(null);
 
     const reviews = [
-        { name: "Alessandro M.", text: t('reviews.review_1'), rating: 5 },
-        { name: "Giulia R.", text: t('reviews.review_2'), rating: 5 },
-        { name: "Marco T.", text: t('reviews.review_3'), rating: 5 }
+        { name: "Luisiano Fiore", text: t('reviews.review_1'), rating: 5 },
+        { name: "Loris Medves (Sawol)", text: t('reviews.review_2'), rating: 5 },
+        { name: "Kap93", text: t('reviews.review_3'), rating: 5 },
+        { name: "Giuseppe Pierangelini", text: t('reviews.review_4'), rating: 5 },
+        { name: "Simone Pilia", text: t('reviews.review_5'), rating: 5 },
+        { name: "Alessandro SANTAGATA", text: t('reviews.review_6'), rating: 5 }
     ];
 
     useEffect(() => {
@@ -43,7 +46,7 @@ const Reviews = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {reviews.map((review, i) => (
                         <div key={i} className="review-card bg-green-900 text-white p-8 rounded-lg shadow-lg relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
                             <div className="flex gap-1 mb-4 text-yellow-400">

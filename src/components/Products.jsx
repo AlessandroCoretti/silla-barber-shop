@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTranslation } from 'react-i18next';
 
 const Products = () => {
+    const { t } = useTranslation();
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -26,15 +28,13 @@ const Products = () => {
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-16 relative z-10">
 
                 <div className="w-full md:w-1/2">
-                    <h2 className="text-4xl font-bold uppercase mb-6">Products and Gifts</h2>
+                    <h2 className="text-4xl font-bold uppercase mb-6">{t('products.title')}</h2>
                     <p className="mb-6 opacity-80 leading-relaxed">
-                        Take the Silla experience home with you. We offer a curated selection of premium grooming products,
-                        from pomades and beard oils to safety razors and gift sets. Perfect for maintaining your look
-                        between visits or as a thoughtful gift for a gentleman.
+                        {t('products.text')}
                     </p>
                     <div className="flex gap-4">
                         <button className="btn bg-white text-green-900 hover:bg-gray-100">
-                            Shop Online
+                            {t('header.book_appointment')}
                         </button>
                     </div>
                 </div>
