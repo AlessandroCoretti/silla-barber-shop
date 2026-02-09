@@ -8,9 +8,9 @@ const News = () => {
     const sectionRef = useRef(null);
 
     const newsItems = [
-        { title: t('news.item_1'), img: "https://images.unsplash.com/photo-1512690459411-b9245aed8ad5?q=80&w=2070&auto=format&fit=crop" },
-        { title: t('news.item_2'), img: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=2072&auto=format&fit=crop" },
-        { title: t('news.item_3'), img: "https://images.unsplash.com/photo-1533235450682-1c64eb374528?q=80&w=2070&auto=format&fit=crop" }
+        { title: t('news.item_1'), img: "https://images.unsplash.com/photo-1599198547792-5c8c4ea7b48d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+        { title: t('news.item_2'), img: "https://images.unsplash.com/photo-1587028691659-cb3e36624a51?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+        { title: t('news.item_3'), img: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
     ];
 
     useEffect(() => {

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +9,7 @@ const Header = () => {
     const { t, i18n } = useTranslation();
     const headerRef = useRef(null);
     const mobileMenuRef = useRef(null);
+    const burgerRefs = useRef([]);
     const [isDark, setIsDark] = useState(true);
     const [showLogo, setShowLogo] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,12 +54,30 @@ const Header = () => {
         });
     }, []);
 
-    // Effect for Mobile Menu Animation
+    // Effect for Mobile Menu Animation and Burger Icon
     useEffect(() => {
+        const [line1, line2, line3] = burgerRefs.current;
+
         if (isMenuOpen) {
-            gsap.to(mobileMenuRef.current, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" });
+            // Open Menu
+            gsap.fromTo(mobileMenuRef.current,
+                { y: 20, xPercent: -50, opacity: 0, scale: 0.95 },
+                { y: 0, xPercent: -50, opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }
+            );
+
+            // Animate Burger to X
+            gsap.to(line1, { y: 8, rotate: 45, duration: 0.3, ease: "power2.out" });
+            gsap.to(line2, { opacity: 0, duration: 0.3, ease: "power2.out" });
+            gsap.to(line3, { y: -8, rotate: -45, duration: 0.3, ease: "power2.out" });
+
         } else {
-            gsap.to(mobileMenuRef.current, { y: "100%", opacity: 0, duration: 0.5, ease: "power3.in" });
+            // Close Menu
+            gsap.to(mobileMenuRef.current, { y: 20, xPercent: -50, opacity: 0, scale: 0.95, duration: 0.3, ease: "power3.in" });
+
+            // Animate X to Burger
+            gsap.to(line1, { y: 0, rotate: 0, duration: 0.3, ease: "power2.in" });
+            gsap.to(line2, { opacity: 1, duration: 0.3, ease: "power2.in" });
+            gsap.to(line3, { y: 0, rotate: 0, duration: 0.3, ease: "power2.in" });
         }
     }, [isMenuOpen]);
 
@@ -88,23 +106,23 @@ const Header = () => {
                 />
             </div>
 
-            {/* Mobile Menu Overlay - Bottom Sheet */}
+            {/* Mobile Menu Overlay - Expanding from Navbar */}
             <div
                 ref={mobileMenuRef}
-                className="fixed inset-x-0 bottom-0 z-40 bg-black/80 backdrop-blur-xl border-t border-white/10 p-8 flex flex-col items-center gap-6 transform translate-y-full opacity-0 md:hidden pb-32 rounded-t-3xl shadow-2xl"
+                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] z-40 backdrop-blur-xl border p-8 flex flex-col items-center gap-6 opacity-0 md:hidden pb-28 rounded-3xl transition-colors duration-300 ${containerClass}`}
             >
-                <nav className="flex flex-col gap-6 text-center font-bold text-white text-lg tracking-widest uppercase">
-                    <a href="#team" onClick={() => setIsMenuOpen(false)} className="hover:text-green-400 transition-colors">{t('header.barbers')}</a>
-                    <a href="#services" onClick={() => setIsMenuOpen(false)} className="hover:text-green-400 transition-colors">{t('header.treatments')}</a>
-                    <a href="#news" onClick={() => setIsMenuOpen(false)} className="hover:text-green-400 transition-colors">{t('header.news')}</a>
-                    <a href="#contact" onClick={() => setIsMenuOpen(false)} className="hover:text-green-400 transition-colors">{t('header.contact')}</a>
+                <nav className={`flex flex-col gap-6 text-center font-bold text-lg tracking-widest uppercase ${textClass}`}>
+                    <a href="#team" onClick={() => setIsMenuOpen(false)} className="hover:opacity-70 transition-opacity">{t('header.barbers')}</a>
+                    <a href="#services" onClick={() => setIsMenuOpen(false)} className="hover:opacity-70 transition-opacity">{t('header.treatments')}</a>
+                    <a href="#news" onClick={() => setIsMenuOpen(false)} className="hover:opacity-70 transition-opacity">{t('header.news')}</a>
+                    <a href="#contact" onClick={() => setIsMenuOpen(false)} className="hover:opacity-70 transition-opacity">{t('header.contact')}</a>
                 </nav>
             </div>
 
             {/* Bottom Navigation Bar */}
             <header
                 ref={headerRef}
-                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-[90%] md:w-auto md:min-w-[600px] backdrop-blur-md border rounded-full p-2 flex justify-between items-center transition-all duration-300 ${containerClass}`}
+                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-[90%] md:w-auto md:min-w-[600px] backdrop-blur-md border rounded-full p-1 flex justify-between items-center transition-all duration-300 ${containerClass}`}
             >
                 {/* Desktop Nav */}
                 <nav className={`hidden md:flex px-8 gap-8 font-bold text-sm tracking-wide uppercase transition-colors duration-300 ${textClass}`}>
@@ -118,9 +136,20 @@ const Header = () => {
                 <div className="md:hidden pl-4">
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className={`${textClass} transition-colors`}
+                        className="relative z-50 w-10 h-10 flex flex-col justify-center items-center gap-1.5"
                     >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        <span
+                            ref={(el) => (burgerRefs.current[0] = el)}
+                            className={`w-6 h-0.5 rounded-full transition-colors duration-300 ${isDark ? 'bg-white' : 'bg-[#1a4d2e]'}`}
+                        />
+                        <span
+                            ref={(el) => (burgerRefs.current[1] = el)}
+                            className={`w-6 h-0.5 rounded-full transition-colors duration-300 ${isDark ? 'bg-white' : 'bg-[#1a4d2e]'}`}
+                        />
+                        <span
+                            ref={(el) => (burgerRefs.current[2] = el)}
+                            className={`w-6 h-0.5 rounded-full transition-colors duration-300 ${isDark ? 'bg-white' : 'bg-[#1a4d2e]'}`}
+                        />
                     </button>
                 </div>
 

@@ -41,7 +41,7 @@ const Products = () => {
 
                 <div className="w-full md:w-1/2">
                     <img
-                        src="https://images.unsplash.com/photo-1556228552-cab3e9b189a3?q=80&w=2070&auto=format&fit=crop"
+                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                         alt="Grooming Products"
                         className="w-full h-auto rounded-lg shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500"
                     />

@@ -25,7 +25,7 @@ const Services = () => {
             name: t('services.combo.name'),
             desc: t('services.combo.desc'),
             price: '€55',
-            img: "https://images.unsplash.com/photo-1599351431202-6e0005a7837b?q=80&w=1000&auto=format&fit=crop" // Combo/General
+            img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=2070&auto=format&fit=crop" // Combo/General
         },
         {
             name: t('services.kids.name'),
