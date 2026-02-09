@@ -64,7 +64,7 @@ const Intro = () => {
                 <div className="intro-image flex-1 relative">
                     <div className="relative overflow-hidden rounded-lg shadow-2xl">
                         <img
-                            src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=2070&auto=format&fit=crop"
+                            src="https://images.unsplash.com/photo-1596541223945-813c9df031c6?q=80&w=2070&auto=format&fit=crop"
                             alt="Barber working"
                             className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
                         />

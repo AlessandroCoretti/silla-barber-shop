@@ -7,7 +7,7 @@
         "book_appointment": "Prenota"
     },
     "hero": {
-        "title": "Cura Classica per il Gentiluomo Moderno",
+        "title": "L'Eccellenza della Barberia Italiana",
         "subtitle": "Vivi l'arte della barberia tradizionale in un'atmosfera rilassata e premium. Non tagliamo solo i capelli, coltiviamo lo stile.",
         "book_cut": "Prenota il Tuo Taglio",
         "watch_video": "Guarda il Video"
@@ -56,7 +56,8 @@
         "review_3": "Velocità, puntualità, cura dei dettagli e bravura a prezzo onesto!",
         "review_4": "Erano circa 4 anni che non andavo da un barbiere... rimasto colpito dal servizio professionale e dall'ambiente confortevole... I ragazzi sono riusciti a consigliarmi il taglio giusto... tornerò sicuramente!",
         "review_5": "Barberia TOP. Molto elegante, luminosa e sopratutto pulita. Il titolare Emanuele Silla insieme ai ragazzi Riccardo e Stefano sono veri professionisti... Consiglio vivamente di venire qui!",
-        "review_6": "Gentili, sempre sorridenti, disponibili, ma soprattutto bravi! In particolare Stefano ci sa davvero fare con i bambini!"
+        "review_6": "Gentili, sempre sorridenti, disponibili, ma soprattutto bravi! In particolare Stefano ci sa davvero fare con i bambini!",
+        "drag_to_view": "Tieni premuto e trascina"
     },
     "news": {
         "title": "Ultime Novità",

@@ -13,45 +13,76 @@ const Services = () => {
             name: t('services.cuts.name'),
             desc: t('services.cuts.desc'),
             price: '€35',
-            img: "https://images.unsplash.com/photo-1599351431202-6e0005a7837b?q=80&w=1000&auto=format&fit=crop" // Haircut specific
+            img: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=1000&auto=format&fit=crop" // Haircut specific
         },
         {
             name: t('services.beard.name'),
             desc: t('services.beard.desc'),
             price: '€25',
-            img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1000&auto=format&fit=crop" // Beard/Shave specific
+            img: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?q=80&w=1000&auto=format&fit=crop" // Beard/Shave specific
         },
         {
             name: t('services.combo.name'),
             desc: t('services.combo.desc'),
             price: '€55',
-            img: "https://images.unsplash.com/photo-1503951914875-befbb713346b?q=80&w=1000&auto=format&fit=crop" // Combo/General
+            img: "https://images.unsplash.com/photo-1599351431202-6e0005a7837b?q=80&w=1000&auto=format&fit=crop" // Combo/General
         },
         {
             name: t('services.kids.name'),
             desc: t('services.kids.desc'),
             price: '€25',
-            img: "https://images.unsplash.com/photo-1596704017254-9b1b1848fb60?q=80&w=1000&auto=format&fit=crop" // Kids
+            img: "https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?q=80&w=1000&auto=format&fit=crop" // Kids
         }
     ];
 
     useEffect(() => {
         const el = sectionRef.current;
+        const mm = gsap.matchMedia();
 
-        gsap.fromTo(el.querySelectorAll('.service-item'),
-            { opacity: 0, x: -30 },
-            {
-                opacity: 1,
-                x: 0,
-                duration: 0.6,
-                stagger: 0.1,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 75%',
+        mm.add({
+            isMobile: "(max-width: 768px)",
+            isDesktop: "(min-width: 769px)"
+        }, (context) => {
+            let { isMobile } = context.conditions;
+
+            // Entry animation for all devices
+            gsap.fromTo(el.querySelectorAll('.service-item'),
+                { opacity: 0, x: -30 },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 75%',
+                    }
                 }
+            );
+
+            if (isMobile) {
+                ScrollTrigger.create({
+                    trigger: el,
+                    start: "top top",
+                    end: `+=${services.length * 100}%`,
+                    pin: true,
+                    scrub: true,
+                    onUpdate: (self) => {
+                        const progress = self.progress;
+                        const idx = Math.min(
+                            Math.floor(progress * services.length),
+                            services.length - 1
+                        );
+                        // Only update state if it changes to avoid excessive re-renders
+                        setActiveIndex(prev => prev !== idx ? idx : prev);
+                    }
+                });
             }
-        );
-    }, [t]);
+        });
+
+        return () => mm.revert();
+
+    }, [t, services.length]);
 
     return (
         <section ref={sectionRef} className="py-24 bg-white" id="services">

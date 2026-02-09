@@ -8,9 +8,9 @@ const News = () => {
     const sectionRef = useRef(null);
 
     const newsItems = [
-        { title: t('news.item_1'), img: "https://images.unsplash.com/photo-1629219357597-4581f4a9b736?q=80&w=2070&auto=format&fit=crop" },
-        { title: t('news.item_2'), img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2072&auto=format&fit=crop" },
-        { title: t('news.item_3'), img: "https://images.unsplash.com/photo-1505245842246-8869c36214ba?q=80&w=2070&auto=format&fit=crop" }
+        { title: t('news.item_1'), img: "https://images.unsplash.com/photo-1512690459411-b9245aed8ad5?q=80&w=2070&auto=format&fit=crop" },
+        { title: t('news.item_2'), img: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=2072&auto=format&fit=crop" },
+        { title: t('news.item_3'), img: "https://images.unsplash.com/photo-1533235450682-1c64eb374528?q=80&w=2070&auto=format&fit=crop" }
     ];
 
     useEffect(() => {

@@ -30,9 +30,9 @@ const Coffee = () => {
 
                 <div className="w-full md:w-1/2">
                     <img
-                        src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=2574&auto=format&fit=crop"
+                        src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2070&auto=format&fit=crop"
                         alt="Coffee Machine"
-                        className="w-full h-auto grayscale hover:grayscale-0 transition-all duration-700 rounded-lg shadow-lg"
+                        className="w-full h-auto transition-all duration-700 rounded-lg shadow-lg"
                     />
                 </div>
 

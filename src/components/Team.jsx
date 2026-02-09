@@ -11,10 +11,10 @@ const Team = () => {
     const [isHovering, setIsHovering] = useState(false);
 
     const barbers = [
-        { name: 'Lele', role: t('team.roles.head_barber'), img: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?q=80&w=1000&auto=format&fit=crop' },
-        { name: 'Riccardo', role: t('team.roles.stylist'), img: 'https://images.unsplash.com/photo-1583341612074-cce5ec6b435c?q=80&w=1000&auto=format&fit=crop' },
-        { name: 'Jurgen', role: t('team.roles.barber'), img: 'https://images.unsplash.com/photo-1618077360395-f3068be8e001?q=80&w=1000&auto=format&fit=crop' },
-        { name: 'Stefano', role: t('team.roles.junior'), img: 'https://images.unsplash.com/photo-1605497787865-e6e50c91acbd?q=80&w=1000&auto=format&fit=crop' }
+        { name: 'Lele', role: t('team.roles.head_barber'), img: 'https://images.unsplash.com/photo-1583543736028-5645564882df?q=80&w=1000&auto=format&fit=crop' },
+        { name: 'Riccardo', role: t('team.roles.stylist'), img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop' },
+        { name: 'Jurgen', role: t('team.roles.barber'), img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop' },
+        { name: 'Stefano', role: t('team.roles.junior'), img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop' }
     ];
 
     useEffect(() => {
@@ -85,7 +85,7 @@ const Team = () => {
                                 <img
                                     src={barber.img}
                                     alt={barber.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
                             </div>
                             <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
