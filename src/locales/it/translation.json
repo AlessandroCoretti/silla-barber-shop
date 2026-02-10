@@ -40,7 +40,7 @@
         "book_appointment": "Prenota Appuntamento"
     },
     "team": {
-        "title": "Incontra i Nostri Barbieri",
+        "title": "Conosci i nostri Barbieri",
         "roles": {
             "head_barber": "Capo Barbiere",
             "stylist": "Stilista",
@@ -90,5 +90,23 @@
         "title": "Area Relax",
         "text": "Non si tratta solo del taglio, ma dell'intera esperienza. Arriva un po' prima o fermati dopo per rilassarti nella nostra zona dedicata. Un momento per staccare la spina, leggere o semplicemente goderti l'atmosfera del nostro barber shop. Il tuo benessere è la nostra priorità.",
         "read_more": "Scopri di più"
+    },
+    "booking": {
+        "title": "Prenota il tuo Appuntamento",
+        "select_barber": "Seleziona Barbiere",
+        "any_barber": "Qualsiasi Barbiere",
+        "select_date": "Seleziona Data",
+        "select_time": "Seleziona Orario",
+        "your_details": "I tuoi Dettagli",
+        "name": "Nome",
+        "surname": "Cognome",
+        "phone": "Telefono",
+        "email": "Email",
+        "message": "Messaggio (Facoltativo)",
+        "submit": "Conferma Prenotazione",
+        "success_title": "Prenotazione Confermata!",
+        "success_message": "Grazie, {{name}}. Il tuo appuntamento con {{barber}} il {{date}} alle {{time}} è stato confermato.",
+        "back_home": "Torna alla Home",
+        "no_slots": "Nessun orario disponibile per questa data."
     }
 }

@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const Hero = () => {
@@ -8,18 +9,22 @@ const Hero = () => {
     const heroRef = useRef(null);
     const textRef = useRef(null);
 
-    useEffect(() => {
-        const tl = gsap.timeline();
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            const tl = gsap.timeline();
 
-        tl.fromTo(heroRef.current,
-            { scale: 1.1 },
-            { scale: 1, duration: 2, ease: "power2.out" }
-        )
-            .fromTo(textRef.current.children,
-                { y: 50, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power3.out" },
-                "-=1.5"
-            );
+            tl.fromTo(heroRef.current,
+                { scale: 1.1 },
+                { scale: 1, duration: 2, ease: "power2.out" }
+            )
+                .fromTo(textRef.current.children,
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power3.out" },
+                    "-=1.5"
+                );
+        }, heroRef);
+
+        return () => ctx.revert();
     }, []);
 
     return (
@@ -42,10 +47,10 @@ const Hero = () => {
                         {t('hero.subtitle')}
                     </p>
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center w-full md:w-auto">
-                        <button className="px-8 py-3 md:px-10 md:py-4 bg-green-800 hover:bg-green-700 text-white rounded-full font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-xl text-sm md:text-base">
+                        <Link to="/booking" className="px-8 py-3 md:px-10 md:py-4 bg-green-800 hover:bg-green-700 text-white rounded-full font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-xl text-sm md:text-base">
                             <span className="md:hidden">Prenota</span>
                             <span className="hidden md:inline">{t('hero.book_cut')}</span>
-                        </button>
+                        </Link>
                         <button className="px-8 py-3 md:px-10 md:py-4 border border-white/30 hover:bg-white/10 text-white rounded-full font-bold uppercase tracking-widest transition-all backdrop-blur-sm text-sm md:text-base">
                             {t('hero.watch_video')}
                         </button>

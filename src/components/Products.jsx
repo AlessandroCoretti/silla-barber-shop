@@ -1,26 +1,29 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const Products = () => {
     const { t } = useTranslation();
     const sectionRef = useRef(null);
 
-    useEffect(() => {
-        const el = sectionRef.current;
-
-        gsap.fromTo(el,
-            { opacity: 0 },
-            {
-                opacity: 1,
-                duration: 1.2,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 80%',
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            const el = sectionRef.current;
+            gsap.fromTo(el,
+                { opacity: 0 },
+                {
+                    opacity: 1,
+                    duration: 1.2,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 80%',
+                    }
                 }
-            }
-        );
+            );
+        }, sectionRef);
+        return () => ctx.revert();
     }, []);
 
     return (
@@ -33,9 +36,9 @@ const Products = () => {
                         {t('products.text')}
                     </p>
                     <div className="flex gap-4">
-                        <button className="btn bg-white text-green-900 hover:bg-gray-100">
+                        <Link to="/booking" className="btn bg-white text-green-900 hover:bg-gray-100">
                             {t('header.book_appointment')}
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

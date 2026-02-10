@@ -40,7 +40,7 @@
         "book_appointment": "Book Appointment"
     },
     "team": {
-        "title": "Meet Our Barbers",
+        "title": "Meet our Barbers",
         "roles": {
             "head_barber": "Head Barber",
             "stylist": "Stylist",
@@ -90,5 +90,23 @@
         "title": "Relax Area",
         "text": "It's not just about the cut, it's about the entire experience. Arrive a bit early or stay after to unwind in our dedicated lounge. A moment to disconnect, read, or simply enjoy the atmosphere of our barber shop. Your well-being is our priority.",
         "read_more": "Discover More"
+    },
+    "booking": {
+        "title": "Book Your Appointment",
+        "select_barber": "Select Barber",
+        "any_barber": "Any Barber",
+        "select_date": "Select Date",
+        "select_time": "Select Time",
+        "your_details": "Your Details",
+        "name": "Name",
+        "surname": "Surname",
+        "phone": "Phone",
+        "email": "Email",
+        "message": "Message (Optional)",
+        "submit": "Confirm Booking",
+        "success_title": "Booking Confirmed!",
+        "success_message": "Thank you, {{name}}. Your appointment with {{barber}} on {{date}} at {{time}} has been confirmed.",
+        "back_home": "Back to Home",
+        "no_slots": "No slots available for this date."
     }
 }

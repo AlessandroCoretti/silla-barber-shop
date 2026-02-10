@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
+
+import { barbers } from '../data/barbers';
 
 const Team = () => {
     const { t } = useTranslation();
@@ -12,13 +14,6 @@ const Team = () => {
     const [activeBarber, setActiveBarber] = useState(null);
     const [isHovering, setIsHovering] = useState(false);
 
-    const barbers = [
-        { name: 'Lele', role: t('team.roles.head_barber'), img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-        { name: 'Riccardo', role: t('team.roles.stylist'), img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop' },
-        { name: 'Jurgen', role: t('team.roles.barber'), img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop' },
-        { name: 'Stefano', role: t('team.roles.junior'), img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop' }
-    ];
-
     useEffect(() => {
         const moveCursor = (e) => {
             setCursorPos({ x: e.clientX, y: e.clientY });
@@ -27,26 +22,29 @@ const Team = () => {
         return () => window.removeEventListener('mousemove', moveCursor);
     }, []);
 
-    useEffect(() => {
-        const el = containerRef.current;
-
-        gsap.fromTo(el.querySelectorAll('.barber-card'),
-            { opacity: 0, y: 50 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 80%',
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            gsap.fromTo('.barber-card',
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: 'top 80%',
+                    }
                 }
-            }
-        );
+            );
+        }, containerRef);
+
+        return () => ctx.revert();
     }, []);
 
-    const handleCardClick = (index) => {
-        navigate('/team', { state: { barberIndex: index } });
+    const handleCardClick = (barberId) => {
+        // Navigate to booking page pre-selecting the barber
+        navigate('/booking', { state: { barberId } });
     };
 
     return (
@@ -84,7 +82,7 @@ const Team = () => {
                                 setIsHovering(true);
                             }}
                             onMouseLeave={() => setIsHovering(false)}
-                            onClick={() => handleCardClick(index)}
+                            onClick={() => handleCardClick(barber.id)}
                         >
                             <div className="aspect-[3/4] overflow-hidden">
                                 <img
@@ -95,7 +93,7 @@ const Team = () => {
                             </div>
                             <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
                                 <h3 className="text-2xl font-bold uppercase">{barber.name}</h3>
-                                <p className="text-sm opacity-80 uppercase tracking-widest">{barber.role}</p>
+                                <p className="text-sm opacity-80 uppercase tracking-widest">{t(barber.roleKey)}</p>
                             </div>
                         </div>
                     ))}

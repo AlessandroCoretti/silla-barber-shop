@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
@@ -7,21 +7,23 @@ const Coffee = () => {
     const { t } = useTranslation();
     const sectionRef = useRef(null);
 
-    useEffect(() => {
-        const el = sectionRef.current;
-
-        gsap.fromTo(el.querySelector('.coffee-content'),
-            { opacity: 0, y: 30 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 75%',
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            const el = sectionRef.current;
+            gsap.fromTo(el.querySelector('.coffee-content'),
+                { opacity: 0, y: 30 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 75%',
+                    }
                 }
-            }
-        );
+            );
+        }, sectionRef);
+        return () => ctx.revert();
     }, []);
 
     return (

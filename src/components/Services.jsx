@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const Services = () => {
     const { t } = useTranslation();
@@ -35,7 +36,7 @@ const Services = () => {
         }
     ];
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const el = sectionRef.current;
         const mm = gsap.matchMedia();
 
@@ -113,9 +114,9 @@ const Services = () => {
                         ))}
                     </div>
 
-                    <button className="mt-8 btn bg-green-800 hover:bg-green-700">
+                    <Link to="/booking" className="mt-8 btn bg-green-800 hover:bg-green-700 inline-block text-center">
                         {t('services.book_appointment')}
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="w-full md:w-1/2 relative h-[500px] overflow-hidden rounded-lg shadow-xl">

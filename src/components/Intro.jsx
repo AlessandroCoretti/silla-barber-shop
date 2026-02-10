@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
@@ -7,34 +7,38 @@ const Intro = () => {
     const { t } = useTranslation();
     const sectionRef = useRef(null);
 
-    useEffect(() => {
-        const el = sectionRef.current;
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            const el = sectionRef.current;
 
-        gsap.fromTo(el.querySelector('.intro-text'),
-            { opacity: 0, x: -50 },
-            {
-                opacity: 1,
-                x: 0,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 75%',
+            gsap.fromTo(el.querySelector('.intro-text'),
+                { opacity: 0, x: -50 },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 75%',
+                    }
                 }
-            }
-        );
+            );
 
-        gsap.fromTo(el.querySelector('.intro-image'),
-            { opacity: 0, scale: 0.9 },
-            {
-                opacity: 1,
-                scale: 1,
-                duration: 1.2,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 70%',
+            gsap.fromTo(el.querySelector('.intro-image'),
+                { opacity: 0, scale: 0.9 },
+                {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 1.2,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 70%',
+                    }
                 }
-            }
-        );
+            );
+        }, sectionRef);
+
+        return () => ctx.revert();
     }, []);
 
     return (

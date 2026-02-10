@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Draggable } from 'gsap/Draggable';
+import { ScrollTrigger, Draggable } from 'gsap/all';
 import { Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,40 +22,35 @@ const Reviews = () => {
     ];
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            // Register Draggable inside the context or outside if preferred, but usually safe here
-            // However, best practice is to register strictly once. Since React 18 strict mode runs twice, we can do it outside or check.
-            // For simplicity in this file, we assume it's registered globally or we register it here.
-        }, sectionRef);
+        let ctx = gsap.context(() => {
+            // Initial animation
+            gsap.fromTo(containerRef.current.children,
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: 'top 80%',
+                    }
+                }
+            );
 
-        return () => ctx.revert();
-    }, []);
-
-    // Specific useEffect for Draggable to ensure DOM is ready and refreshing on resize
-    useEffect(() => {
-        let draggableInstance;
-
-        const initDraggable = () => {
-            if (draggableInstance) {
-                draggableInstance[0].kill();
-            }
-
-            // Calculate bounds based on wrapper and container width
-            // container (draggable) needs to slide within wrapper (viewport)
-            // But Draggable 'bounds' usually works by constraining the element to the bounds of another.
-            // Here we want the container to be able to slide left until its right edge hits the viewport right edge.
-
-            draggableInstance = Draggable.create(containerRef.current, {
+            // Draggable initialization
+            Draggable.create(containerRef.current, {
                 type: "x",
                 bounds: {
                     minX: - (containerRef.current.offsetWidth - wrapperRef.current.offsetWidth),
                     maxX: 0
                 },
-                inertia: true, // Requires InertiaPlugin, which is paid/club greensock locally usually, but standard draggable works without it for 'hold and slide'
+                inertia: true,
                 edgeResistance: 0.65,
-                resistance: 0.75, // Adds some friction
+                resistance: 0.75,
                 cursor: "grab",
                 activeCursor: "grabbing",
+                dragClickables: true,
                 onDragStart: function () {
                     gsap.to(containerRef.current, { cursor: "grabbing" });
                 },
@@ -64,38 +58,62 @@ const Reviews = () => {
                     gsap.to(containerRef.current, { cursor: "grab" });
                 }
             });
-        };
-
-        // Need to wait for fonts/images or just layout
-        const timer = setTimeout(initDraggable, 100);
+        }, sectionRef);
 
         const handleResize = () => {
-            initDraggable();
-        }
+            // Refresh Draggable bounds on resize
+            if (ctx && ctx.revert) { // safety check
+                ctx.revert(); // Revert everything
+                // Re-add animations/draggable. 
+                // A better way with GSAP context is just to kill the draggable and recreate it, 
+                // but reverting context is the nuclear option ensuring no memory leaks.
+                // However, complete revert checks might cause flash. 
+                // Let's just update bounds if possible or re-run the context logic.
 
-        window.addEventListener('resize', handleResize);
+                // Re-running the effect might be simpler:
+                // But we are in an effect cleanup.
 
-        // Initial animation
-        gsap.fromTo(containerRef.current.children,
-            { opacity: 0, y: 50 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: 'top 80%',
-                }
+                // Actually, for resize, Draggable has an `applyBounds` method, or we can just kill and recreate.
+                // But since we used context, let's just let React handle full re-render if needed or rely on a key.
+                // Or simply:
+                ctx.kill();
+                ctx = gsap.context(() => {
+                    // Re-init code (duplicated here for simplicity in this thought process, but better to extract function)
+                    // ...
+                    // Actually, let's just make the dependency array handle it or use a specific resize handler that updates draggable.
+                }, sectionRef);
+
+                // Let's trigger a re-render to re-run this effect? No, that's not optimal.
+                // Let's just create a refresh function.
             }
-        );
-
-        return () => {
-            if (draggableInstance && draggableInstance[0]) draggableInstance[0].kill();
-            window.removeEventListener('resize', handleResize);
-            clearTimeout(timer);
         };
+
+        // Re-implementing correctly:
+        // We can just rely on window resize causing re-renders if we used state, but we aren't.
+        // So we need to manually update Draggable.
+
+        // Let's use a separate ResizeObserver or window listener to kill and recreate draggable specifically.
+        // Or cleaner: make the Draggable creation dependent on window size (but via ref).
+
+        return () => ctx.revert();
+    }, [t]); // Added t dependency as it might change content length? reviews is constant.
+
+    // A better way to handle resize for Draggable bound updates:
+    useEffect(() => {
+        const refreshDraggable = () => {
+            const draggable = Draggable.get(containerRef.current);
+            if (draggable) {
+                draggable.applyBounds({
+                    minX: - (containerRef.current.offsetWidth - wrapperRef.current.offsetWidth),
+                    maxX: 0
+                });
+            }
+        };
+
+        window.addEventListener('resize', refreshDraggable);
+        return () => window.removeEventListener('resize', refreshDraggable);
     }, []);
+
 
     return (
         <section ref={sectionRef} className="py-24 bg-white overflow-hidden">
@@ -103,9 +121,8 @@ const Reviews = () => {
                 <div className="flex justify-between items-center mb-12">
                     <h2 className="text-4xl font-bold uppercase">{t('reviews.title')}</h2>
                     <div className="flex gap-2">
-                        {/* Visual indicator that it's scrollable/interactive could be helpful, but user asked for hold and slide */}
                         <span className="text-sm font-medium opacity-50 uppercase tracking-widest hidden md:block">
-                            {t('reviews.drag_to_view') || "Drag to view"}
+                            {t('reviews.drag_to_view') || "Hold and Drag"}
                         </span>
                     </div>
                 </div>

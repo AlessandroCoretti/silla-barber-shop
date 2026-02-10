@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
@@ -13,22 +13,24 @@ const News = () => {
         { title: t('news.item_3'), img: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
     ];
 
-    useEffect(() => {
-        const el = sectionRef.current;
-
-        gsap.fromTo(el.querySelectorAll('.news-card'),
-            { opacity: 0, y: 30 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 80%',
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            const el = sectionRef.current;
+            gsap.fromTo(el.querySelectorAll('.news-card'),
+                { opacity: 0, y: 30 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 80%',
+                    }
                 }
-            }
-        );
+            );
+        }, sectionRef);
+        return () => ctx.revert();
     }, []);
 
     return (
