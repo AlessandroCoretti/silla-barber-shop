@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
 
 const Team = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const containerRef = useRef(null);
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
     const [activeBarber, setActiveBarber] = useState(null);
@@ -43,10 +45,12 @@ const Team = () => {
         );
     }, []);
 
+    const handleCardClick = (index) => {
+        navigate('/team', { state: { barberIndex: index } });
+    };
+
     return (
         <section ref={containerRef} className="py-24 bg-gray-50 text-gray-900 relative" id="team">
-            {/* Custom Cursor */}
-            {/* Custom Cursor */}
             {/* Custom Cursor */}
             <div
                 className="fixed top-0 left-0 bg-green-900/90 text-white rounded-full flex items-center justify-center text-center px-3 py-3 pointer-events-none z-50 transition-transform duration-100 ease-out shadow-2xl backdrop-blur-sm"
@@ -80,6 +84,7 @@ const Team = () => {
                                 setIsHovering(true);
                             }}
                             onMouseLeave={() => setIsHovering(false)}
+                            onClick={() => handleCardClick(index)}
                         >
                             <div className="aspect-[3/4] overflow-hidden">
                                 <img

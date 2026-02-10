@@ -1,43 +1,46 @@
 import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Components
+// Components & Pages
 import Header from './components/Header';
-import Hero from './components/Hero';
-import Intro from './components/Intro';
-import Team from './components/Team';
-import Services from './components/Services';
-import Products from './components/Products';
-import Coffee from './components/Coffee';
-import News from './components/News';
-import Reviews from './components/Reviews';
 import Footer from './components/Footer';
+import Home from './pages/Home';
+import TeamPage from './pages/TeamPage';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-function App() {
+function ScrollToTop() {
+  const { pathname } = useLocation();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
+function App() {
   useEffect(() => {
     // Global animations setup if needed
   }, []);
 
   return (
-    <div className="app">
-      <Header />
-      <main>
-        <Hero />
-        <Intro />
-        <Team />
-        <Services />
-        <Products />
-        <Coffee />
-        <News />
-        <Reviews />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <ScrollToTop />
+      <div className="app">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/team" element={<TeamPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

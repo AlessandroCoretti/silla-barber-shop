@@ -97,7 +97,7 @@ const Header = () => {
         <>
             {/* Top Logo */}
             <div
-                className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-500 ease-in-out ${isDark ? 'text-white' : 'text-[#0f2f1c]'} ${showLogo ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}
+                className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none transition-all duration-500 ease-in-out ${isDark ? 'text-white' : 'text-[#0f2f1c]'} ${showLogo ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}
             >
                 <img
                     src="/barberia-moderna.svg"
@@ -109,7 +109,7 @@ const Header = () => {
             {/* Mobile Menu Overlay - Expanding from Navbar */}
             <div
                 ref={mobileMenuRef}
-                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] z-40 backdrop-blur-xl border p-8 flex flex-col items-center gap-6 opacity-0 md:hidden pb-28 rounded-3xl transition-colors duration-300 ${containerClass}`}
+                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] z-[90] backdrop-blur-xl border p-8 flex flex-col items-center gap-6 opacity-0 md:hidden pb-28 rounded-3xl transition-colors duration-300 ${containerClass}`}
             >
                 <nav className={`flex flex-col gap-6 text-center font-bold text-lg tracking-widest uppercase ${textClass}`}>
                     <a href="#team" onClick={() => setIsMenuOpen(false)} className="hover:opacity-70 transition-opacity">{t('header.barbers')}</a>
@@ -122,7 +122,7 @@ const Header = () => {
             {/* Bottom Navigation Bar */}
             <header
                 ref={headerRef}
-                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-[90%] md:w-auto md:min-w-[600px] backdrop-blur-md border rounded-full p-1 flex justify-between items-center transition-all duration-300 ${containerClass}`}
+                className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 z-[100] w-[90%] md:w-auto md:min-w-[600px] backdrop-blur-md border rounded-full p-1 flex justify-between items-center transition-all duration-300 ${containerClass}`}
             >
                 {/* Desktop Nav */}
                 <nav className={`hidden md:flex px-8 gap-8 font-bold text-sm tracking-wide uppercase transition-colors duration-300 ${textClass}`}>

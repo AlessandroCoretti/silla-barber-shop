@@ -47,7 +47,13 @@
             "barber": "Barbiere",
             "junior": "Junior"
         },
-        "discover_more": "Scopri di più su"
+        "discover_more": "Scopri di più su",
+        "descriptions": {
+            "lele": "Maestro della lama con oltre 15 anni di esperienza. Specializzato in tagli classici e rasature con panno caldo.",
+            "riccardo": "Stilista moderno con un tocco per le tendenze contemporanee. Esperto in sfumature e texturizzazione.",
+            "jurgen": "Preciso e attento, Jurgen porta una prospettiva fresca alla barberia tradizionale.",
+            "stefano": "Stella nascente con una passione per l'apprendimento e il perfezionamento della sua arte."
+        }
     },
     "reviews": {
         "title": "Recensioni",

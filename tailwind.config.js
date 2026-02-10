@@ -8,8 +8,9 @@ export default {
         extend: {
             colors: {
                 'green': {
-                    800: '#1a4d2e',
-                    900: '#0f2f1c',
+                    700: '#333333', // Dark Gray for hover
+                    800: '#1a1a1a', // Primary Dark (Not pure black)
+                    900: '#0f0f0f', // Darker shade
                 }
             },
             fontFamily: {

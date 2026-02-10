@@ -47,7 +47,13 @@
             "barber": "Barber",
             "junior": "Junior"
         },
-        "discover_more": "Discover more about"
+        "discover_more": "Discover more about",
+        "descriptions": {
+            "lele": "Master of the blade with over 15 years of experience. Specializes in classic cuts and hot towel shaves.",
+            "riccardo": "Modern stylist with a flair for contemporary trends. Expert in fading and texturizing.",
+            "jurgen": "Precise and attentive, Jurgen brings a fresh perspective to traditional barbering.",
+            "stefano": "Rising star with a passion for learning and perfecting his craft."
+        }
     },
     "reviews": {
         "title": "Reviews",
