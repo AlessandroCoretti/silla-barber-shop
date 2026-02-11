@@ -9,6 +9,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import TeamPage from './pages/TeamPage';
 import BookingPage from './pages/BookingPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -38,6 +40,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<TeamPage />} />
             <Route path="/booking" element={<BookingPage />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
         </main>
         <Footer />

@@ -10,6 +10,7 @@ const BookingPage = () => {
     const [step, setStep] = useState(1); // 1: Barber, 2: Date/Time, 3: Details, 4: Success
     const [bookingData, setBookingData] = useState({
         barber: null, // null = any
+        service: '',
         date: '',
         time: '',
         name: '',
@@ -18,6 +19,13 @@ const BookingPage = () => {
         phone: '',
         message: ''
     });
+
+    const services = [
+        { id: 'cut', name: 'booking.services.cut', price: 30 },
+        { id: 'beard', name: 'booking.services.beard', price: 20 },
+        { id: 'combo', name: 'booking.services.combo', price: 45 },
+        { id: 'kid', name: 'booking.services.kid', price: 25 },
+    ];
 
     const timeSlots = [
         "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
@@ -62,11 +70,34 @@ const BookingPage = () => {
         setBookingData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you would typically send data to a backend
-        console.log("Booking Data:", bookingData);
-        setStep(4);
+
+        const newBooking = {
+            ...bookingData,
+            price: services.find(s => s.id === bookingData.service)?.price || 0
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newBooking),
+            });
+
+            if (response.ok) {
+                console.log("Booking Saved to Backend");
+                setStep(4);
+            } else {
+                console.error("Failed to save booking");
+                alert("Errore nel salvataggio della prenotazione");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Errore di connessione al server");
+        }
     };
 
     const getBarberName = (id) => {
@@ -164,31 +195,51 @@ const BookingPage = () => {
                     {/* Step 3: Details */}
                     {step === 3 && (
                         <form onSubmit={handleSubmit} className="max-w-xl mx-auto w-full space-y-6">
+
+                            {/* Service Selection */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.select_service')}</label>
+                                <select
+                                    name="service"
+                                    required
+                                    value={bookingData.service}
+                                    onChange={handleInputChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none appearance-none bg-white"
+                                >
+                                    <option value="" disabled>{t('booking.choose_service')}</option>
+                                    {services.map(s => (
+                                        <option key={s.id} value={s.id}>
+                                            {t(s.name)} - €{s.price}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.name')}</label>
-                                    <input required name="name" onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Mario" />
+                                    <input required name="name" value={bookingData.name} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Mario" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.surname')}</label>
-                                    <input required name="surname" onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Rossi" />
+                                    <input required name="surname" value={bookingData.surname} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Rossi" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.phone')}</label>
-                                    <input required name="phone" type="tel" onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
+                                    <input required name="phone" type="tel" value={bookingData.phone} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.email')}</label>
-                                    <input required name="email" type="email" onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
+                                    <input required name="email" type="email" value={bookingData.email} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.message')}</label>
-                                <textarea name="message" onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none h-32"></textarea>
+                                <textarea name="message" value={bookingData.message} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none h-32"></textarea>
                             </div>
 
                             <div className="flex gap-4">

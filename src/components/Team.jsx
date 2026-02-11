@@ -44,7 +44,7 @@ const Team = () => {
 
     const handleCardClick = (barberId) => {
         // Navigate to booking page pre-selecting the barber
-        navigate('/booking', { state: { barberId } });
+        navigate('/team');
     };
 
     return (
