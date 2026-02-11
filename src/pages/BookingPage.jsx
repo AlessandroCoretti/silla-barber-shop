@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { barbers } from '../data/barbers';
+import LoginRegister from '../components/LoginRegister';
+
 
 const BookingPage = () => {
     const { t } = useTranslation();
@@ -19,6 +21,7 @@ const BookingPage = () => {
         phone: '',
         message: ''
     });
+    const [reservedTimes, setReservedTimes] = useState([]);
 
     const services = [
         { id: 'cut', name: 'booking.services.cut', price: 30 },
@@ -51,6 +54,19 @@ const BookingPage = () => {
         }
     }, [location.state]);
 
+    useEffect(() => {
+        if (bookingData.date && bookingData.barber) {
+            fetch(`http://localhost:8081/api/bookings/reserved?date=${bookingData.date}&barber=${bookingData.barber}`)
+                .then(res => res.json())
+                .then(data => {
+                    setReservedTimes(data.map(b => b.time));
+                })
+                .catch(err => console.error("Error fetching reserved slots:", err));
+        } else {
+            setReservedTimes([]);
+        }
+    }, [bookingData.date, bookingData.barber]);
+
     const handleBarberSelect = (barberId) => {
         setBookingData(prev => ({ ...prev, barber: barberId }));
         setStep(2);
@@ -79,7 +95,7 @@ const BookingPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/api/bookings', {
+            const response = await fetch('http://localhost:8081/api/bookings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,32 +144,49 @@ const BookingPage = () => {
 
                     {/* Step 1: Barber Selection */}
                     {step === 1 && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                            {/* Any Barber Option */}
-                            <div
-                                onClick={() => handleBarberSelect(null)}
-                                className="cursor-pointer border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center gap-4 hover:border-green-800 hover:bg-green-50 transition-all aspect-[3/4]"
-                            >
-                                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                                    <span className="text-2xl text-gray-400">?</span>
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                {/* Any Barber Option */}
+                                <div
+                                    onClick={() => handleBarberSelect(null)}
+                                    className="cursor-pointer border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center gap-4 hover:border-green-800 hover:bg-green-50 transition-all aspect-[3/4]"
+                                >
+                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span className="text-2xl text-gray-400">?</span>
+                                    </div>
+                                    <span className="font-bold text-center text-gray-600">{t('booking.any_barber')}</span>
                                 </div>
-                                <span className="font-bold text-center text-gray-600">{t('booking.any_barber')}</span>
+
+                                {barbers.map(barber => (
+                                    <div
+                                        key={barber.id}
+                                        onClick={() => handleBarberSelect(barber.id)}
+                                        className="cursor-pointer group relative overflow-hidden rounded-xl aspect-[3/4] shadow-md hover:shadow-xl transition-all"
+                                    >
+                                        <img src={barber.img} alt={barber.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
+                                            <span className="text-white font-bold uppercase">{barber.name}</span>
+                                            <span className="text-xs text-gray-300">{t(barber.roleKey)}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
 
-                            {barbers.map(barber => (
-                                <div
-                                    key={barber.id}
-                                    onClick={() => handleBarberSelect(barber.id)}
-                                    className="cursor-pointer group relative overflow-hidden rounded-xl aspect-[3/4] shadow-md hover:shadow-xl transition-all"
-                                >
-                                    <img src={barber.img} alt={barber.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                                        <span className="text-white font-bold uppercase">{barber.name}</span>
-                                        <span className="text-xs text-gray-300">{t(barber.roleKey)}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                            {/* Login Section */}
+                            <div className="mt-12 border-t pt-8">
+                                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Area Clienti</h2>
+                                <LoginRegister onLoginSuccess={(user) => {
+                                    setBookingData(prev => ({
+                                        ...prev,
+                                        name: user.name,
+                                        surname: user.surname,
+                                        email: user.email,
+                                        phone: user.phone || ''
+                                    }));
+                                    alert(`Benvenuto ${user.name}! I tuoi dati sono stati caricati.`);
+                                }} />
+                            </div>
+                        </>
                     )}
 
                     {/* Step 2: Date & Time */}
@@ -173,16 +206,29 @@ const BookingPage = () => {
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">{t('booking.select_time')}</label>
                                     <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                                        {timeSlots.map(time => (
-                                            <button
-                                                key={time}
-                                                onClick={() => handleTimeSelect(time)}
-                                                className="py-2 px-1 rounded border border-gray-200 hover:bg-green-800 hover:text-white transition-colors text-sm font-medium"
-                                            >
-                                                {time}
-                                            </button>
-                                        ))}
+                                        {timeSlots.map(time => {
+                                            const isReserved = reservedTimes.includes(time);
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    disabled={isReserved}
+                                                    onClick={() => handleTimeSelect(time)}
+                                                    className={`py-2 px-1 rounded border transition-colors text-sm font-medium
+                                                        ${isReserved
+                                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-100'
+                                                            : 'border-gray-200 hover:bg-green-800 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
+                                    {timeSlots.every(t => reservedTimes.includes(t)) && (
+                                        <p className="text-red-500 text-sm mt-2 font-bold">
+                                            {t('booking.fully_booked', 'Tutto esaurito per questa data. Prova un altro giorno o barbiere.')}
+                                        </p>
+                                    )}
                                 </div>
                             )}
 

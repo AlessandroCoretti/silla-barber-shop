@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 @Service
 public class NotificationService {
@@ -12,6 +13,7 @@ public class NotificationService {
     @Autowired(required = false)
     private JavaMailSender emailSender;
 
+    @Async
     public void sendBookingConfirmation(Booking booking) {
         System.out.println("--------------------------------------------------");
         System.out.println("Simulating SMS to Client (+39 " + booking.getPhone() + "):");
@@ -31,6 +33,7 @@ public class NotificationService {
         sendEmail(booking.getEmail(), subject, text);
     }
 
+    @Async
     public void sendBookingCancellation(Booking booking) {
         System.out.println("--------------------------------------------------");
         System.out.println("Simulating SMS to Client (+39 " + booking.getPhone() + "):");
@@ -45,6 +48,25 @@ public class NotificationService {
                 "Silla Barber Shop";
 
         sendEmail(booking.getEmail(), subject, text);
+    }
+
+    @Async
+    public void sendWelcomeEmail(String toEmail, String name) {
+        String subject = "Benvenuto in Silla Barber Shop!";
+        String text = "Ciao " + name + ",\n\n" +
+                "Grazie per esserti registrato su Silla Barber Shop! Ora puoi prenotare i tuoi appuntamenti più velocemente.\n\n" +
+                "A presto,\nSilla Barber Shop";
+        sendEmail(toEmail, subject, text);
+    }
+
+    @Async
+    public void sendGoodbyeEmail(String toEmail, String name) {
+        String subject = "Arrivederci da Silla Barber Shop";
+        String text = "Ciao " + name + ",\n\n" +
+                "Il tuo account è stato eliminato come richiesto.\n" +
+                "Ci dispiace vederti andare via. Speriamo di rivederti presto!\n\n" +
+                "Silla Barber Shop";
+        sendEmail(toEmail, subject, text);
     }
 
     private void sendEmail(String to, String subject, String text) {

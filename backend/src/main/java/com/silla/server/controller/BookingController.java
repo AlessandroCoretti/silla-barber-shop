@@ -27,6 +27,11 @@ public class BookingController {
         return bookingRepository.findAll(Sort.by(Sort.Direction.DESC, "timestamp"));
     }
 
+    @GetMapping("/reserved")
+    public List<Booking> getReservedBookings(@RequestParam String date, @RequestParam String barber) {
+        return bookingRepository.findByDateAndBarber(date, barber);
+    }
+
     @PostMapping
     public Booking createBooking(@RequestBody Booking booking) {
         booking.setTimestamp(LocalDateTime.now());
