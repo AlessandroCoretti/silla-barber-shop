@@ -6,6 +6,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [activeTab, setActiveTab] = useState('bookings'); // 'bookings', 'stats', 'manual'
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [manualForm, setManualForm] = useState({
         barber: '',
         service: '',
@@ -32,6 +33,25 @@ const AdminDashboard = () => {
         { id: 'kid', name: 'Taglio Bambino', price: 25 },
     ];
 
+    const sortBookings = (data) => {
+        return [...data].sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            if (dateA !== dateB) return dateA - dateB;
+            return a.time.localeCompare(b.time);
+        });
+    };
+
+    const getDailyAvailability = () => {
+        const bookingsForDate = bookings.filter(b => b.date === selectedDate);
+        return barbers.map(barber => {
+            const barberBookings = bookingsForDate.filter(b => b.barber === barber.id);
+            const bookedTimes = barberBookings.map(b => b.time);
+            const freeSlots = timeSlots.filter(time => !bookedTimes.includes(time));
+            return { ...barber, freeSlots };
+        });
+    };
+
     useEffect(() => {
         const isAuth = localStorage.getItem('silla_admin_auth');
         if (!isAuth) {
@@ -42,8 +62,9 @@ const AdminDashboard = () => {
         fetch('http://localhost:8081/api/bookings')
             .then(res => res.json())
             .then(data => {
-                setBookings(data);
-                calculateStats(data);
+                const sortedData = sortBookings(data);
+                setBookings(sortedData);
+                calculateStats(sortedData);
             })
             .catch(err => console.error("Error fetching bookings:", err));
     }, [navigate]);
@@ -136,7 +157,7 @@ const AdminDashboard = () => {
             if (response.ok) {
                 alert('Prenotazione inserita!');
                 const newBooking = await response.json();
-                const updatedBookings = [newBooking, ...bookings];
+                const updatedBookings = sortBookings([...bookings, newBooking]);
 
                 setBookings(updatedBookings);
                 calculateStats(updatedBookings);
@@ -165,8 +186,8 @@ const AdminDashboard = () => {
         <div className="min-h-screen bg-gray-100">
             {/* Admin Header */}
             <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Silla Admin Dashboard</h1>
+                <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight text-center sm:text-left">Silla Admin Dashboard</h1>
                     <button
                         onClick={handleLogout}
                         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors"
@@ -178,106 +199,192 @@ const AdminDashboard = () => {
 
             <main className="max-w-7xl mx-auto px-4 py-8">
                 {/* Tabs */}
-                <div className="flex space-x-4 mb-6">
-                    <button onClick={() => setActiveTab('bookings')} className={`px-4 py-2 rounded-md font-medium ${activeTab === 'bookings' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
+                <div className="flex space-x-2 mb-6 overflow-x-auto pb-2 sm:pb-0">
+                    <button onClick={() => setActiveTab('bookings')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'bookings' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
                         Prenotazioni
                     </button>
-                    <button onClick={() => setActiveTab('stats')} className={`px-4 py-2 rounded-md font-medium ${activeTab === 'stats' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
+                    <button onClick={() => setActiveTab('stats')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'stats' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
                         Statistiche
                     </button>
-                    <button onClick={() => setActiveTab('manual')} className={`px-4 py-2 rounded-md font-medium ${activeTab === 'manual' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
+                    <button onClick={() => setActiveTab('manual')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'manual' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
                         Nuova Prenotazione
                     </button>
                 </div>
 
                 {activeTab === 'bookings' && (
-                    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                        <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                Prenotazioni Recenti
-                            </h3>
-                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                Gestisci gli appuntamenti del salone.
-                            </p>
+                    <div className="space-y-6">
+                        {/* Date Filter */}
+                        <div className="bg-white shadow rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <label htmlFor="dateFilter" className="font-medium text-gray-700">Seleziona Data:</label>
+                            <input
+                                type="date"
+                                id="dateFilter"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                className="border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border"
+                            />
                         </div>
 
-                        {bookings.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
-                                Nessuna prenotazione trovata.
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Cliente
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Contatti
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Servizio
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Barbiere
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Data & Ora
-                                            </th>
-                                            <th scope="col" className="relative px-6 py-3">
-                                                <span className="sr-only">Delete</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {bookings.map((booking) => (
-                                            <tr key={booking.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center">
-                                                        <div>
-                                                            <div className="text-sm font-medium text-gray-900">
-                                                                {booking.name} {booking.surname}
-                                                            </div>
-                                                            {booking.message && (
-                                                                <div className="text-xs text-gray-400 mt-1 max-w-[150px] truncate" title={booking.message}>
-                                                                    Msg: {booking.message}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Bookings List */}
+                            <div className="lg:col-span-2 bg-white shadow overflow-hidden sm:rounded-lg">
+                                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                        Prenotazioni del {new Date(selectedDate).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                                    </h3>
+                                    <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                        Gestisci gli appuntamenti per la data selezionata.
+                                    </p>
+                                </div>
+
+                                {bookings.filter(b => b.date === selectedDate).length === 0 ? (
+                                    <div className="p-8 text-center text-gray-500">
+                                        Nessuna prenotazione per questa data.
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        {/* Desktop Table */}
+                                        <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Cliente
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Contatti
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Servizio
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Barbiere
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Ora
+                                                    </th>
+                                                    <th scope="col" className="relative px-6 py-3">
+                                                        <span className="sr-only">Delete</span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {bookings.filter(b => b.date === selectedDate).map((booking) => (
+                                                    <tr key={booking.id} className="hover:bg-gray-50">
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <div className="flex items-center">
+                                                                <div>
+                                                                    <div className="text-sm font-medium text-gray-900">
+                                                                        {booking.name} {booking.surname}
+                                                                    </div>
+                                                                    {booking.message && (
+                                                                        <div className="text-xs text-gray-400 mt-1 max-w-[150px] truncate" title={booking.message}>
+                                                                            Msg: {booking.message}
+                                                                        </div>
+                                                                    )}
                                                                 </div>
-                                                            )}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <div className="text-sm text-gray-900">{booking.phone}</div>
+                                                            <div className="text-sm text-gray-500">{booking.email}</div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <div className="text-sm text-gray-900">{getServiceName(booking.service)}</div>
+                                                            <div className="text-sm text-green-600 font-semibold">€{booking.price}</div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 uppercase">
+                                                                {getBarberName(booking.barber)}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">
+                                                            {booking.time}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button
+                                                                onClick={() => handleDelete(booking.id)}
+                                                                className="text-red-600 hover:text-red-900 font-bold"
+                                                            >
+                                                                Elimina
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+
+                                        {/* Mobile Cards */}
+                                        <div className="md:hidden space-y-4 p-4">
+                                            {bookings.filter(b => b.date === selectedDate).map((booking) => (
+                                                <div key={booking.id} className="bg-white p-4 border rounded-lg shadow-sm">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <h4 className="text-lg font-bold text-gray-900">{booking.name} {booking.surname}</h4>
+                                                            <p className="text-sm text-gray-500">Ore {booking.time}</p>
                                                         </div>
+                                                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 uppercase">
+                                                            {getBarberName(booking.barber)}
+                                                        </span>
                                                     </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{booking.phone}</div>
-                                                    <div className="text-sm text-gray-500">{booking.email}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{getServiceName(booking.service)}</div>
-                                                    <div className="text-sm text-green-600 font-semibold">€{booking.price}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 uppercase">
-                                                        {getBarberName(booking.barber)}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <div className="font-bold text-gray-900">{booking.date}</div>
-                                                    <div>{booking.time}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        onClick={() => handleDelete(booking.id)}
-                                                        className="text-red-600 hover:text-red-900 font-bold"
-                                                    >
-                                                        Elimina
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+
+                                                    <div className="space-y-1 text-sm text-gray-700 mb-3">
+                                                        <div className="flex justify-between">
+                                                            <span>Servizio:</span>
+                                                            <span className="font-medium">{getServiceName(booking.service)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span>Prezzo:</span>
+                                                            <span className="font-bold text-green-600">€{booking.price}</span>
+                                                        </div>
+                                                        {booking.phone && (
+                                                            <div className="flex justify-between">
+                                                                <span>Tel:</span>
+                                                                <a href={`tel:${booking.phone}`} className="text-blue-600">{booking.phone}</a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex justify-end pt-2 border-t">
+                                                        <button
+                                                            onClick={() => handleDelete(booking.id)}
+                                                            className="text-red-600 hover:text-red-900 font-bold text-sm"
+                                                        >
+                                                            Elimina
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        )}
+
+                            {/* Daily Availability Sidebar */}
+                            <div className="bg-white shadow rounded-lg p-6 h-fit">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">Disponibilità {new Date(selectedDate).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}</h3>
+                                <div className="space-y-6">
+                                    {getDailyAvailability().map(barber => (
+                                        <div key={barber.id}>
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <img src={barber.img} alt={barber.name} className="w-8 h-8 rounded-full object-cover" />
+                                                <h4 className="font-medium text-gray-900">{barber.name}</h4>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {barber.freeSlots.length > 0 ? (
+                                                    barber.freeSlots.map(slot => (
+                                                        <span key={slot} className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs border border-green-200">
+                                                            {slot}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs text-red-500 font-medium">Nessuna disponibilità</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
 
@@ -315,7 +422,7 @@ const AdminDashboard = () => {
                     <div className="bg-white shadow rounded-lg p-6 max-w-2xl mx-auto">
                         <h3 className="text-lg font-bold text-gray-900 mb-6">Inserisci Prenotazione Manuale</h3>
                         <form onSubmit={handleManualSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <select required className="p-2 border rounded" onChange={e => setManualForm({ ...manualForm, barber: e.target.value })}>
                                     <option value="">Seleziona Barbiere</option>
                                     {barbers.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -325,7 +432,7 @@ const AdminDashboard = () => {
                                     {services.map(s => <option key={s.id} value={s.id}>{s.name} (€{s.price})</option>)}
                                 </select>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input type="date" required className="p-2 border rounded" onChange={e => setManualForm({ ...manualForm, date: e.target.value })} min={new Date().toISOString().split('T')[0]} />
                                 <select required className="p-2 border rounded" value={manualForm.time} onChange={e => setManualForm({ ...manualForm, time: e.target.value })}>
                                     <option value="">Seleziona Orario</option>

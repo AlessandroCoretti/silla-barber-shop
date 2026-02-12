@@ -25,6 +25,21 @@ function ScrollToTop() {
   return null;
 }
 
+function Layout({ children }) {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  return (
+    <>
+      {!isAdmin && <Header />}
+      <main className={isAdmin ? 'admin-main' : ''}>
+        {children}
+      </main>
+      {!isAdmin && <Footer />}
+    </>
+  );
+}
+
 function App() {
   useEffect(() => {
     // Global animations setup if needed
@@ -34,8 +49,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <div className="app">
-        <Header />
-        <main>
+        <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<TeamPage />} />
@@ -43,8 +57,7 @@ function App() {
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
-        </main>
-        <Footer />
+        </Layout>
       </div>
     </Router>
   );
