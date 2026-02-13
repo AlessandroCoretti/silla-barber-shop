@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LoginRegister = ({ onLoginSuccess }) => {
+const LoginRegister = ({ onLoginSuccess, showAlert }) => {
     const { t } = useTranslation();
     const [isLogin, setIsLogin] = useState(true);
 
@@ -38,49 +38,73 @@ const LoginRegister = ({ onLoginSuccess }) => {
                 setLoggedInUser(data);
                 onLoginSuccess(data);
             } else {
-                setError(data.error || 'Autenticazione fallita');
+                setError(data.error || t('auth.auth_failed'));
             }
         } catch (err) {
-            setError('Errore di connessione al server');
+            setError(t('booking.connection_error'));
         }
     };
 
+    const handleDelete = () => {
+        if (!showAlert) {
+            // Fallback if showAlert not provided
+            if (!window.confirm(t('auth.delete_confirm_msg'))) return;
+            executeDelete();
+            return;
+        }
 
+        showAlert(
+            t('auth.delete_confirm_title'),
+            t('auth.delete_confirm_msg'),
+            'confirm',
+            executeDelete
+        );
+    };
 
-    const handleDelete = async () => {
-        if (!window.confirm(t('Are you sure you want to delete your account? This action cannot be undone.'))) return;
-
+    const executeDelete = async () => {
         try {
             const response = await fetch(`http://localhost:8081/api/auth/${loggedInUser.id}`, {
                 method: 'DELETE'
             });
 
             if (response.ok) {
-                alert('Account eliminato con successo. Ci dispiace vederti andare via!');
+                if (showAlert) {
+                    showAlert(t('common.success'), t('auth.delete_success'), 'success');
+                } else {
+                    alert(t('auth.delete_success'));
+                }
                 setLoggedInUser(null);
                 setIsLogin(true);
                 setFormData({ name: '', surname: '', email: '', password: '', phone: '' });
                 // Optional: callback for logout to parent if needed
             } else {
-                alert('Errore durante l\'eliminazione dell\'account');
+                if (showAlert) {
+                    showAlert(t('common.error'), t('auth.delete_error'), 'error');
+                } else {
+                    alert(t('auth.delete_error'));
+                }
             }
         } catch (error) {
             console.error(error);
-            alert('Errore di connessione');
+            if (showAlert) {
+                showAlert(t('common.error'), t('booking.connection_error'), 'error');
+            } else {
+                alert(t('booking.connection_error'));
+            }
         }
     };
 
     if (loggedInUser) {
         return (
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 max-w-md mx-auto mt-8 text-center">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Benvenuto, {loggedInUser.name}!</h3>
-                <p className="text-gray-600 mb-6">I tuoi dati sono stati caricati nella prenotazione.</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{t('auth.welcome_user', { name: loggedInUser.name })}</h3>
+                <p className="text-gray-600 mb-6">{t('auth.data_loaded')}</p>
 
                 <button
                     onClick={handleDelete}
                     className="text-red-600 hover:text-red-800 text-sm font-bold underline"
                 >
-                    Elimina Account
+                    {t('auth.delete_account')}
                 </button>
             </div>
         );
@@ -89,7 +113,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
     return (
         <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 max-w-md mx-auto mt-8">
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                {isLogin ? 'Accedi per prenotare più velocemente' : 'Registrati'}
+                {isLogin ? t('auth.login_title') : t('auth.register_title')}
             </h3>
 
             {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
@@ -126,7 +150,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
                 <input
                     name="password"
                     type="password"
-                    placeholder="Password"
+                    placeholder={t('auth.password_placeholder')}
                     onChange={handleChange}
                     required
                     className="p-2 border rounded w-full"
@@ -143,7 +167,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
                 )}
 
                 <button type="submit" className="w-full bg-gray-800 text-white py-2 rounded font-bold hover:bg-gray-700 transition">
-                    {isLogin ? 'Accedi' : 'Registrati'}
+                    {isLogin ? t('auth.login_btn') : t('auth.register_btn')}
                 </button>
             </form>
 
@@ -152,7 +176,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
                     onClick={() => setIsLogin(!isLogin)}
                     className="text-green-700 hover:underline"
                 >
-                    {isLogin ? 'Non hai un account? Registrati' : 'Hai già un account? Accedi'}
+                    {isLogin ? t('auth.no_account') : t('auth.has_account')}
                 </button>
             </div>
         </div>

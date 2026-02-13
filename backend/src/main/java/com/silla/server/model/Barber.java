@@ -18,18 +18,23 @@ public class Barber {
     private String img;
 
     @jakarta.persistence.Lob
-    @jakarta.persistence.Column(length = 5000) // Increase length for description
-    private String description;
+    @jakarta.persistence.Column(length = 5000)
+    private String descriptionIt;
+
+    @jakarta.persistence.Lob
+    @jakarta.persistence.Column(length = 5000)
+    private String descriptionEn;
 
     public Barber() {
     }
 
-    public Barber(String id, String name, String roleKey, String img, String description) {
+    public Barber(String id, String name, String roleKey, String img, String descriptionIt, String descriptionEn) {
         this.id = id;
         this.name = name;
         this.roleKey = roleKey;
         this.img = img;
-        this.description = description;
+        this.descriptionIt = descriptionIt;
+        this.descriptionEn = descriptionEn;
     }
 
     public String getId() {
@@ -64,11 +69,19 @@ public class Barber {
         this.img = img;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescriptionIt() {
+        return descriptionIt;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescriptionIt(String descriptionIt) {
+        this.descriptionIt = descriptionIt;
+    }
+
+    public String getDescriptionEn() {
+        return descriptionEn;
+    }
+
+    public void setDescriptionEn(String descriptionEn) {
+        this.descriptionEn = descriptionEn;
     }
 }

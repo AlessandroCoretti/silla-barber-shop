@@ -68,7 +68,7 @@ const Footer = () => {
                 </div>
 
                 <div className="mt-16 pt-8 border-t border-white/10 text-center text-gray-500 text-sm">
-                    &copy; {new Date().getFullYear()} Silla Barber Shop. All rights reserved.
+                    &copy; {new Date().getFullYear()} Silla Barber Shop. {t('footer.rights_reserved')}
                 </div>
             </div>
         </footer>

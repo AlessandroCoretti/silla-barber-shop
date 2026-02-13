@@ -1,10 +1,18 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { barbers } from '../data/barbers';
+
 
 const TeamPage = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const [barbers, setBarbers] = useState([]);
+
+    useEffect(() => {
+        fetch('http://localhost:8081/api/barbers')
+            .then(res => res.json())
+            .then(data => setBarbers(data))
+            .catch(err => console.error("Error fetching barbers:", err));
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
@@ -63,7 +71,7 @@ const TeamPage = () => {
                                     </h3>
                                     <div className="w-12 h-1 bg-green-700 mb-6 rounded-full opacity-50 mx-auto"></div>
                                     <p className="text-neutral-600 text-lg leading-relaxed font-light">
-                                        {t(`team.descriptions.${barber.id}`)}
+                                        {i18n.language === 'it' ? (barber.descriptionIt || barber.description) : (barber.descriptionEn || barber.descriptionIt || barber.description)}
                                     </p>
                                 </div>
                             </div>

@@ -1,13 +1,15 @@
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollTrigger, Draggable } from 'gsap/all';
+
+gsap.registerPlugin(ScrollTrigger, Draggable);
 import { useTranslation } from 'react-i18next';
 
 // import { barbers } from '../data/barbers'; // Removed
 
-const Team = () => {
-    const { t } = useTranslation();
+const Team = ({ showDescription = true }) => {
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const containerRef = useRef(null);
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
@@ -32,23 +34,61 @@ const Team = () => {
 
     useLayoutEffect(() => {
         let ctx = gsap.context(() => {
-            gsap.fromTo('.barber-card',
-                { opacity: 0, y: 50 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.8,
-                    stagger: 0.2,
-                    scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: 'top 80%',
+            if (barbers.length > 4) {
+                // Carousel Animation
+                gsap.fromTo(containerRef.current.children,
+                    { opacity: 0, x: 50 },
+                    {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.8,
+                        stagger: 0.1,
+                        scrollTrigger: {
+                            trigger: containerRef.current,
+                            start: 'top 80%',
+                        }
                     }
-                }
-            );
+                );
+
+                Draggable.create(containerRef.current, {
+                    type: "x",
+                    bounds: {
+                        minX: - (containerRef.current.scrollWidth - containerRef.current.offsetWidth),
+                        maxX: 0
+                    },
+                    inertia: true,
+                    edgeResistance: 0.65,
+                    // resistance: 0.75, // Removed to allow free scrolling
+                    cursor: "grab",
+                    activeCursor: "grabbing",
+                    dragClickables: true,
+                    onDragStart: function () {
+                        gsap.to(containerRef.current, { cursor: "grabbing" });
+                    },
+                    onDragEnd: function () {
+                        gsap.to(containerRef.current, { cursor: "grab" });
+                    }
+                });
+            } else {
+                // Grid Animation (Existing)
+                gsap.fromTo('.barber-card',
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.2,
+                        scrollTrigger: {
+                            trigger: containerRef.current,
+                            start: 'top 80%',
+                        }
+                    }
+                );
+            }
         }, containerRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [barbers]); // Re-run when barbers change
 
     const handleCardClick = (barberId) => {
         // Navigate to booking page pre-selecting the barber
@@ -80,37 +120,75 @@ const Team = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {barbers.map((barber, index) => (
-                        <div
-                            key={index}
-                            className="barber-card group relative overflow-hidden rounded-lg shadow-lg cursor-none"
-                            onMouseEnter={() => {
-                                setActiveBarber(barber.name);
-                                setIsHovering(true);
-                            }}
-                            onMouseLeave={() => setIsHovering(false)}
-                            onClick={() => handleCardClick(barber.id)}
-                        >
-                            <div className="aspect-[3/4] overflow-hidden">
-                                <img
-                                    src={barber.img}
-                                    alt={barber.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                            </div>
-                            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
-                                <h3 className="text-2xl font-bold uppercase">{barber.name}</h3>
-                                <p className="text-sm opacity-80 uppercase tracking-widest mb-2">{t(barber.roleKey)}</p>
-                                {barber.description && (
-                                    <p className="text-xs text-gray-300 line-clamp-3 mt-2 font-light">
-                                        {barber.description}
-                                    </p>
-                                )}
-                            </div>
+                {barbers.length > 4 ? (
+                    // Carousel Layout
+                    <div className="overflow-hidden cursor-grab active:cursor-grabbing" style={{ touchAction: "pan-y" }}>
+                        <div ref={containerRef} className="flex gap-6 w-max">
+                            {barbers.map((barber, index) => (
+                                <div
+                                    key={index}
+                                    className="barber-card group relative overflow-hidden rounded-lg shadow-lg cursor-none w-[85vw] md:w-[30vw] lg:w-[20vw] flex-shrink-0"
+                                    onMouseEnter={() => {
+                                        setActiveBarber(barber.name);
+                                        setIsHovering(true);
+                                    }}
+                                    onMouseLeave={() => setIsHovering(false)}
+                                    onClick={() => handleCardClick(barber.id)}
+                                >
+                                    <div className="aspect-[3/4] overflow-hidden">
+                                        <img
+                                            src={barber.img}
+                                            alt={barber.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                    </div>
+                                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                        <h3 className="text-2xl font-bold uppercase">{barber.name}</h3>
+                                        <p className="text-sm opacity-80 uppercase tracking-widest mb-2">{t(barber.roleKey)}</p>
+                                        {showDescription && (barber.descriptionIt || barber.descriptionEn) && (
+                                            <p className="text-xs text-gray-300 line-clamp-3 mt-2 font-light">
+                                                {i18n.language === 'it' ? (barber.descriptionIt || barber.description) : (barber.descriptionEn || barber.descriptionIt || barber.description)}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ) : (
+                    // Grid Layout
+                    <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {barbers.map((barber, index) => (
+                            <div
+                                key={index}
+                                className="barber-card group relative overflow-hidden rounded-lg shadow-lg cursor-none"
+                                onMouseEnter={() => {
+                                    setActiveBarber(barber.name);
+                                    setIsHovering(true);
+                                }}
+                                onMouseLeave={() => setIsHovering(false)}
+                                onClick={() => handleCardClick(barber.id)}
+                            >
+                                <div className="aspect-[3/4] overflow-hidden">
+                                    <img
+                                        src={barber.img}
+                                        alt={barber.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    />
+                                </div>
+                                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                    <h3 className="text-2xl font-bold uppercase">{barber.name}</h3>
+                                    <p className="text-sm opacity-80 uppercase tracking-widest mb-2">{t(barber.roleKey)}</p>
+                                    {showDescription && (barber.descriptionIt || barber.descriptionEn) && (
+                                        <p className="text-xs text-gray-300 line-clamp-3 mt-2 font-light">
+                                            {i18n.language === 'it' ? (barber.descriptionIt || barber.description) : (barber.descriptionEn || barber.descriptionIt || barber.description)}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

@@ -2,9 +2,8 @@ import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
-// import { barbers } from '../data/barbers'; // Removed
 import LoginRegister from '../components/LoginRegister';
-
+import CustomAlert from '../components/CustomAlert';
 
 const BookingPage = () => {
     const { t } = useTranslation();
@@ -24,6 +23,23 @@ const BookingPage = () => {
     const [reservedTimes, setReservedTimes] = useState([]);
     const [dayOffs, setDayOffs] = useState([]);
     const [barbers, setBarbers] = useState([]); // Dynamic Barbers
+
+    // Custom Alert State
+    const [alertState, setAlertState] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'alert', // alert, confirm, success, error
+        onConfirm: null
+    });
+
+    const showAlert = (title, message, type = 'alert', onConfirm = null) => {
+        setAlertState({ isOpen: true, title, message, type, onConfirm });
+    };
+
+    const closeAlert = () => {
+        setAlertState(prev => ({ ...prev, isOpen: false }));
+    };
 
     useEffect(() => {
         // Fetch Barbers
@@ -70,10 +86,6 @@ const BookingPage = () => {
     useEffect(() => {
         if (location.state && location.state.barberId) {
             setBookingData(prev => ({ ...prev, barber: location.state.barberId }));
-            // If coming from team page, we still need date first now
-            // Maybe just pre-select barber but stay on date step?
-            // For now, let's keep user on step 2 (Barber selection) but with barber pre-selected? 
-            // Actually, we force step 1 (Date) now.
             setStep(1);
         }
     }, [location.state]);
@@ -132,11 +144,11 @@ const BookingPage = () => {
                 setStep(5);
             } else {
                 console.error("Failed to save booking");
-                alert("Errore nel salvataggio della prenotazione");
+                showAlert(t('common.error'), t('booking.save_error'), 'error');
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Errore di connessione al server");
+            showAlert(t('common.error'), t('booking.connection_error'), 'error');
         }
     };
 
@@ -148,6 +160,15 @@ const BookingPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-24 px-4" ref={pageRef}>
+            <CustomAlert
+                isOpen={alertState.isOpen}
+                onClose={closeAlert}
+                title={alertState.title}
+                message={alertState.message}
+                type={alertState.type}
+                onConfirm={alertState.onConfirm}
+            />
+
             <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden min-h-[600px] flex flex-col">
 
                 {/* Header */}
@@ -155,13 +176,13 @@ const BookingPage = () => {
                     <h1 className="text-3xl font-bold uppercase tracking-wider">{t('booking.title')}</h1>
                     {step < 5 && (
                         <div className="flex justify-center flex-wrap gap-2 sm:gap-4 mt-4 text-xs sm:text-sm opacity-70">
-                            <span className={step === 1 ? "text-white font-bold" : ""}>1. Data & Servizio</span>
+                            <span className={step === 1 ? "text-white font-bold" : ""}>{t('booking.steps.date_service')}</span>
                             <span>&gt;</span>
-                            <span className={step === 2 ? "text-white font-bold" : ""}>2. Barbiere</span>
+                            <span className={step === 2 ? "text-white font-bold" : ""}>{t('booking.steps.barber')}</span>
                             <span>&gt;</span>
-                            <span className={step === 3 ? "text-white font-bold" : ""}>3. Orario</span>
+                            <span className={step === 3 ? "text-white font-bold" : ""}>{t('booking.steps.time')}</span>
                             <span>&gt;</span>
-                            <span className={step === 4 ? "text-white font-bold" : ""}>4. Dettagli</span>
+                            <span className={step === 4 ? "text-white font-bold" : ""}>{t('booking.steps.details')}</span>
                         </div>
                     )}
                 </div>
@@ -207,7 +228,7 @@ const BookingPage = () => {
                                 disabled={!bookingData.date || !bookingData.service}
                                 className={`w-full py-4 rounded-lg font-bold text-white transition-colors ${!bookingData.date || !bookingData.service ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700 shadow-lg'}`}
                             >
-                                {t('booking.next', 'Avanti')} &rarr;
+                                {t('booking.next')} &rarr;
                             </button>
                         </div>
                     )}
@@ -215,7 +236,7 @@ const BookingPage = () => {
                     {/* Step 2: Barber Selection */}
                     {step === 2 && (
                         <div className="space-y-6 animate-fadeIn">
-                            <h2 className="text-xl font-bold text-gray-800 text-center mb-6">{t('booking.select_barber')} per il {new Date(bookingData.date).toLocaleDateString()}</h2>
+                            <h2 className="text-xl font-bold text-gray-800 text-center mb-6">{t('booking.select_barber')} - {new Date(bookingData.date).toLocaleDateString()}</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                 {/* Any Barber Option */}
                                 <div
@@ -247,12 +268,12 @@ const BookingPage = () => {
 
                             {barbers.every(b => dayOffs.some(d => d.barberId === b.id && d.date === bookingData.date)) && (
                                 <div className="text-center text-red-500 font-bold py-8">
-                                    Tutti i barbieri sono occupati o in ferie in questa data.
+                                    {t('booking.fully_booked_day')}
                                 </div>
                             )}
 
                             <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-green-800 mt-4 underline w-full text-center">
-                                &larr; Indietro
+                                &larr; {t('booking.back')}
                             </button>
                         </div>
                     )}
@@ -262,7 +283,7 @@ const BookingPage = () => {
                         <div className="max-w-xl mx-auto w-full space-y-8 animate-fadeIn">
                             <div className="text-center mb-6">
                                 <h2 className="text-xl font-bold text-gray-800">{t('booking.select_time')}</h2>
-                                <p className="text-gray-500">{bookingData.date} con {getBarberName(bookingData.barber)}</p>
+                                <p className="text-gray-500">{bookingData.date} - {getBarberName(bookingData.barber)}</p>
                             </div>
 
                             <div>
@@ -287,13 +308,13 @@ const BookingPage = () => {
                                 </div>
                                 {timeSlots.every(t => reservedTimes.includes(t)) && (
                                     <p className="text-red-500 text-sm mt-2 font-bold text-center">
-                                        {t('booking.fully_booked', 'Tutto esaurito per questa data. Prova un altro giorno o barbiere.')}
+                                        {t('booking.fully_booked')}
                                     </p>
                                 )}
                             </div>
 
                             <button onClick={() => setStep(2)} className="text-sm text-gray-500 hover:text-green-800 mt-4 underline w-full text-center">
-                                &larr; Indietro
+                                &larr; {t('booking.back')}
                             </button>
                         </div>
                     )}
@@ -302,24 +323,32 @@ const BookingPage = () => {
                     {step === 4 && (
                         <div className="animate-fadeIn">
                             <div className="mb-6 text-center">
-                                <h2 className="text-xl font-bold text-gray-800">I tuoi dati</h2>
+                                <h2 className="text-xl font-bold text-gray-800">{t('booking.your_details')}</h2>
                                 <p className="text-sm text-gray-500">
-                                    Scelto: {getBarberName(bookingData.barber)} | {bookingData.date} @ {bookingData.time} | {t(services.find(s => s.id === bookingData.service)?.name)}
+                                    {t('booking.chosen_summary')} {getBarberName(bookingData.barber)} | {bookingData.date} @ {bookingData.time} | {t(services.find(s => s.id === bookingData.service)?.name)}
                                 </p>
                             </div>
 
                             {/* Login Section */}
                             <div className="mb-8 border-b pb-6">
-                                <LoginRegister onLoginSuccess={(user) => {
-                                    setBookingData(prev => ({
-                                        ...prev,
-                                        name: user.name,
-                                        surname: user.surname,
-                                        email: user.email,
-                                        phone: user.phone || ''
-                                    }));
-                                    alert(`Benvenuto ${user.name}! I tuoi dati sono stati caricati.`);
-                                }} />
+                                <LoginRegister
+                                    onLoginSuccess={(user) => {
+                                        setBookingData(prev => ({
+                                            ...prev,
+                                            name: user.name,
+                                            surname: user.surname,
+                                            email: user.email,
+                                            phone: user.phone || ''
+                                        }));
+                                        // Use custom alert instead of window.alert
+                                        showAlert(
+                                            t('common.success'),
+                                            t('auth.welcome_user', { name: user.name }) + ' ' + t('auth.data_loaded'),
+                                            'success'
+                                        );
+                                    }}
+                                    showAlert={showAlert} // Pass showAlert to child
+                                />
                             </div>
 
                             <form onSubmit={handleSubmit} className="max-w-xl mx-auto w-full space-y-6">
@@ -353,7 +382,7 @@ const BookingPage = () => {
 
                                 <div className="flex gap-4">
                                     <button type="button" onClick={() => setStep(3)} className="w-1/3 py-4 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50">
-                                        Indietro
+                                        {t('booking.back')}
                                     </button>
                                     <button type="submit" className="w-2/3 py-4 bg-green-800 text-white rounded-lg font-bold hover:bg-green-700 transition-colors shadow-lg">
                                         {t('booking.submit')}

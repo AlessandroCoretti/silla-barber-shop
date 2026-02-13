@@ -204,7 +204,7 @@ const Header = () => {
                     </div>
 
                     <Link to="/booking" className={`px-6 md:px-8 py-3 rounded-full font-bold text-sm uppercase tracking-wide transition-colors duration-300 shadow-lg ${buttonClass}`}>
-                        <span className="md:hidden">Prenota</span>
+                        <span className="md:hidden">{t('header.book_appointment')}</span>
                         <span className="hidden md:inline">{t('header.book_appointment')}</span>
                     </Link>
                 </div>

@@ -72,16 +72,6 @@
         "item_2": "Formazione Baristi",
         "item_3": "Apertura Nuova Sede Presto"
     },
-    "footer": {
-        "address": "Indirizzo",
-        "hours": "Orari",
-        "contact": "Contatti",
-        "tue_sat": "Martedì - Sabato",
-        "monday": "Lunedì",
-        "sunday": "Domenica",
-        "closed": "Chiuso",
-        "hours_value": "09–13, 14–19"
-    },
     "products": {
         "title": "Prodotti e Regali",
         "text": "Porta l'esperienza Silla a casa con te. Offriamo una selezione curata di prodotti premium per la cura della persona, da pomate e oli per barba a rasoi di sicurezza e set regalo. Perfetto per mantenere il tuo look tra una visita e l'altra o come pensiero gentile per un gentiluomo."
@@ -97,6 +87,8 @@
         "any_barber": "Qualsiasi Barbiere",
         "select_date": "Seleziona Data",
         "select_time": "Seleziona Orario",
+        "select_service": "Seleziona Servizio",
+        "choose_service": "Scegli un servizio...",
         "your_details": "I tuoi Dettagli",
         "name": "Nome",
         "surname": "Cognome",
@@ -107,6 +99,56 @@
         "success_title": "Prenotazione Confermata!",
         "success_message": "Grazie, {{name}}. Il tuo appuntamento con {{barber}} il {{date}} alle {{time}} è stato confermato.",
         "back_home": "Torna alla Home",
-        "no_slots": "Nessun orario disponibile per questa data."
+        "no_slots": "Nessun orario disponibile per questa data.",
+        "steps": {
+            "date_service": "1. Data & Servizio",
+            "barber": "2. Barbiere",
+            "time": "3. Orario",
+            "details": "4. Dettagli"
+        },
+        "next": "Avanti",
+        "back": "Indietro",
+        "fully_booked": "Tutto esaurito per questa data. Prova un altro giorno o barbiere.",
+        "chosen_summary": "Scelto:",
+        "save_error": "Errore nel salvataggio della prenotazione",
+        "connection_error": "Errore di connessione al server",
+        "fully_booked_day": "Tutti i barbieri sono occupati o in ferie in questa data."
+    },
+    "auth": {
+        "login_title": "Accedi per prenotare più velocemente",
+        "register_title": "Registrati",
+        "login_btn": "Accedi",
+        "register_btn": "Registrati",
+        "no_account": "Non hai un account? Registrati",
+        "has_account": "Hai già un account? Accedi",
+        "welcome_user": "Benvenuto, {{name}}!",
+        "data_loaded": "I tuoi dati sono stati caricati nella prenotazione.",
+        "delete_account": "Elimina Account",
+        "delete_confirm_title": "Elimina Account",
+        "delete_confirm_msg": "Sei sicuro di voler eliminare il tuo account? Questa azione non può essere annullata.",
+        "delete_success": "Account eliminato con successo. Ci dispiace vederti andare via!",
+        "delete_error": "Errore durante l'eliminazione dell'account",
+        "auth_failed": "Autenticazione fallita",
+        "password_placeholder": "Password"
+    },
+    "footer": {
+        "address": "Indirizzo",
+        "hours": "Orari",
+        "contact": "Contatti",
+        "tue_sat": "Martedì - Sabato",
+        "monday": "Lunedì",
+        "sunday": "Domenica",
+        "closed": "Chiuso",
+        "hours_value": "09–13, 14–19",
+        "rights_reserved": "Tutti i diritti riservati."
+    },
+    "common": {
+        "confirm": "Conferma",
+        "cancel": "Annulla",
+        "close": "Chiudi",
+        "error": "Errore",
+        "success": "Successo",
+        "attention": "Attenzione",
+        "book": "Prenota"
     }
 }

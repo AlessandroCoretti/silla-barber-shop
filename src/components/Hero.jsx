@@ -28,7 +28,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <section className="relative h-screen w-full overflow-hidden dark-section" id="hero">
+        <section className="relative min-h-[100dvh] w-full overflow-hidden dark-section" id="hero">
             <div ref={heroRef} className="absolute inset-0 bg-black">
                 <img
                     src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2070&auto=format&fit=crop"
@@ -38,7 +38,7 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40"></div>
             </div>
 
-            <div className="relative h-full container mx-auto px-4 flex flex-col justify-center items-center text-center text-white z-10">
+            <div className="relative h-full container mx-auto px-4 flex flex-col justify-center items-center text-center text-white z-10 pt-32 md:pt-48">
                 <div ref={textRef} className="max-w-4xl px-4">
                     <h1 className="text-3xl md:text-7xl font-heading uppercase tracking-wider mb-4 md:mb-8 leading-tight">
                         {t('hero.title')}
@@ -48,7 +48,7 @@ const Hero = () => {
                     </p>
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center w-full md:w-auto">
                         <Link to="/booking" className="px-8 py-3 md:px-10 md:py-4 bg-green-800 hover:bg-green-700 text-white rounded-full font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-xl text-sm md:text-base">
-                            <span className="md:hidden">Prenota</span>
+                            <span className="md:hidden">{t('common.book')}</span>
                             <span className="hidden md:inline">{t('hero.book_cut')}</span>
                         </Link>
                         <button className="px-8 py-3 md:px-10 md:py-4 border border-white/30 hover:bg-white/10 text-white rounded-full font-bold uppercase tracking-widest transition-all backdrop-blur-sm text-sm md:text-base">

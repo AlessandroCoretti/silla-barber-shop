@@ -47,7 +47,7 @@ const Reviews = () => {
                 },
                 inertia: true,
                 edgeResistance: 0.65,
-                resistance: 0.75,
+                // resistance: 0.75, // Removed
                 cursor: "grab",
                 activeCursor: "grabbing",
                 dragClickables: true,
@@ -127,7 +127,7 @@ const Reviews = () => {
                     </div>
                 </div>
 
-                <div ref={wrapperRef} className="overflow-hidden cursor-grab active:cursor-grabbing">
+                <div ref={wrapperRef} className="overflow-hidden cursor-grab active:cursor-grabbing" style={{ touchAction: "pan-y" }}>
                     <div ref={containerRef} className="flex gap-6 w-max">
                         {reviews.map((review, i) => (
                             <div key={i} className="review-card select-none w-[85vw] md:w-[30vw] lg:w-[25vw] flex-shrink-0 bg-green-900 text-white p-8 rounded-lg shadow-lg relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">

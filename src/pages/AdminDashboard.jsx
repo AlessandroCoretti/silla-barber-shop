@@ -34,7 +34,8 @@ const AdminDashboard = () => {
         name: '',
         roleKey: 'team.roles.barber',
         img: '',
-        description: ''
+        descriptionIt: '',
+        descriptionEn: ''
     });
     const [showAddBarber, setShowAddBarber] = useState(false);
 
@@ -307,7 +308,7 @@ const AdminDashboard = () => {
             if (response.ok) {
                 const newBarber = await response.json();
                 setBarbers([...barbers, newBarber]);
-                setNewBarberForm({ name: '', roleKey: 'team.roles.barber', img: '' });
+                setNewBarberForm({ name: '', roleKey: 'team.roles.barber', img: '', descriptionIt: '', descriptionEn: '' });
                 setShowAddBarber(false);
                 alert('Barbiere aggiunto con successo!');
             } else {
@@ -647,7 +648,7 @@ const AdminDashboard = () => {
                             </div>
                             <button
                                 onClick={() => setShowAddBarber(!showAddBarber)}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-bold"
+                                className="px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-black transition-colors font-bold shadow-lg"
                             >
                                 {showAddBarber ? 'Chiudi' : '+ Aggiungi Barbiere'}
                             </button>
@@ -700,11 +701,19 @@ const AdminDashboard = () => {
                                     </select>
 
                                     <textarea
-                                        placeholder="Descrizione (es. specialità, esperienza...)"
+                                        placeholder="Descrizione IT (es. specialità, esperienza...)"
                                         className="p-3 border rounded-lg md:col-span-2"
-                                        rows="3"
-                                        value={newBarberForm.description || ''}
-                                        onChange={e => setNewBarberForm({ ...newBarberForm, description: e.target.value })}
+                                        rows="2"
+                                        value={newBarberForm.descriptionIt || ''}
+                                        onChange={e => setNewBarberForm({ ...newBarberForm, descriptionIt: e.target.value })}
+                                    />
+
+                                    <textarea
+                                        placeholder="Descrizione EN (es. specialty, experience...)"
+                                        className="p-3 border rounded-lg md:col-span-2"
+                                        rows="2"
+                                        value={newBarberForm.descriptionEn || ''}
+                                        onChange={e => setNewBarberForm({ ...newBarberForm, descriptionEn: e.target.value })}
                                     />
 
                                     <button type="submit" className="bg-green-600 text-white font-bold p-3 rounded-lg hover:bg-green-700 md:col-span-2">
@@ -737,7 +746,7 @@ const AdminDashboard = () => {
                                             e.stopPropagation();
                                             handleDeleteBarber(barber.id, barber.name);
                                         }}
-                                        className="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-700 shadow-md z-10"
+                                        className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 transition-all shadow-sm z-10"
                                         title="Elimina Barbiere"
                                     >
                                         &times;

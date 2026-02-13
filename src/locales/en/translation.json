@@ -72,16 +72,6 @@
         "item_2": "Barista Training",
         "item_3": "New Location Opening Soon"
     },
-    "footer": {
-        "address": "Address",
-        "hours": "Hours",
-        "contact": "Contact",
-        "tue_sat": "Tuesday - Saturday",
-        "monday": "Monday",
-        "sunday": "Sunday",
-        "closed": "Closed",
-        "hours_value": "9 AM – 1 PM, 2 PM – 7 PM"
-    },
     "products": {
         "title": "Products and Gifts",
         "text": "Take the Silla experience home with you. We offer a curated selection of premium grooming products, from pomades and beard oils to safety razors and gift sets. Perfect for maintaining your look between visits or as a thoughtful gift for a gentleman."
@@ -97,6 +87,8 @@
         "any_barber": "Any Barber",
         "select_date": "Select Date",
         "select_time": "Select Time",
+        "select_service": "Select Service",
+        "choose_service": "Choose a service...",
         "your_details": "Your Details",
         "name": "Name",
         "surname": "Surname",
@@ -107,6 +99,56 @@
         "success_title": "Booking Confirmed!",
         "success_message": "Thank you, {{name}}. Your appointment with {{barber}} on {{date}} at {{time}} has been confirmed.",
         "back_home": "Back to Home",
-        "no_slots": "No slots available for this date."
+        "no_slots": "No slots available for this date.",
+        "steps": {
+            "date_service": "1. Date & Service",
+            "barber": "2. Barber",
+            "time": "3. Time",
+            "details": "4. Details"
+        },
+        "next": "Next",
+        "back": "Back",
+        "fully_booked": "Fully booked for this date. Try another day or barber.",
+        "chosen_summary": "Chosen:",
+        "save_error": "Error saving booking",
+        "connection_error": "Server connection error",
+        "fully_booked_day": "All barbers are booked or on holiday on this date."
+    },
+    "auth": {
+        "login_title": "Login to book faster",
+        "register_title": "Register",
+        "login_btn": "Login",
+        "register_btn": "Register",
+        "no_account": "Don't have an account? Register",
+        "has_account": "Already have an account? Login",
+        "welcome_user": "Welcome, {{name}}!",
+        "data_loaded": "Your details have been loaded into the booking.",
+        "delete_account": "Delete Account",
+        "delete_confirm_title": "Delete Account",
+        "delete_confirm_msg": "Are you sure you want to delete your account? This action cannot be undone.",
+        "delete_success": "Account deleted successfully. We're sorry to see you go!",
+        "delete_error": "Error deleting account",
+        "auth_failed": "Authentication failed",
+        "password_placeholder": "Password"
+    },
+    "footer": {
+        "address": "Address",
+        "hours": "Hours",
+        "contact": "Contact",
+        "tue_sat": "Tuesday - Saturday",
+        "monday": "Monday",
+        "sunday": "Sunday",
+        "closed": "Closed",
+        "hours_value": "9 AM – 1 PM, 2 PM – 7 PM",
+        "rights_reserved": "All rights reserved."
+    },
+    "common": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "close": "Close",
+        "error": "Error",
+        "success": "Success",
+        "attention": "Attention",
+        "book": "Book"
     }
 }
