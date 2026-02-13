@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
-import { barbers } from '../data/barbers';
+// import { barbers } from '../data/barbers'; // Removed
 import LoginRegister from '../components/LoginRegister';
 
 
@@ -22,6 +22,26 @@ const BookingPage = () => {
         message: ''
     });
     const [reservedTimes, setReservedTimes] = useState([]);
+    const [dayOffs, setDayOffs] = useState([]);
+    const [barbers, setBarbers] = useState([]); // Dynamic Barbers
+
+    useEffect(() => {
+        // Fetch Barbers
+        fetch('http://localhost:8081/api/barbers')
+            .then(res => res.json())
+            .then(data => setBarbers(data))
+            .catch(err => console.error("Error fetching barbers:", err));
+
+        // Fetch Day Offs to filter barbers
+        fetch('http://localhost:8081/api/dayoffs')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setDayOffs(data);
+                }
+            })
+            .catch(err => console.error("Error fetching day offs:", err));
+    }, []);
 
     const services = [
         { id: 'cut', name: 'booking.services.cut', price: 30 },
@@ -50,7 +70,11 @@ const BookingPage = () => {
     useEffect(() => {
         if (location.state && location.state.barberId) {
             setBookingData(prev => ({ ...prev, barber: location.state.barberId }));
-            setStep(2);
+            // If coming from team page, we still need date first now
+            // Maybe just pre-select barber but stay on date step?
+            // For now, let's keep user on step 2 (Barber selection) but with barber pre-selected? 
+            // Actually, we force step 1 (Date) now.
+            setStep(1);
         }
     }, [location.state]);
 
@@ -69,7 +93,7 @@ const BookingPage = () => {
 
     const handleBarberSelect = (barberId) => {
         setBookingData(prev => ({ ...prev, barber: barberId }));
-        setStep(2);
+        setStep(3); // Go to Time selection
     };
 
     const handleDateChange = (e) => {
@@ -78,7 +102,7 @@ const BookingPage = () => {
 
     const handleTimeSelect = (time) => {
         setBookingData(prev => ({ ...prev, time }));
-        setStep(3);
+        setStep(4); // Go to Details
     };
 
     const handleInputChange = (e) => {
@@ -105,7 +129,7 @@ const BookingPage = () => {
 
             if (response.ok) {
                 console.log("Booking Saved to Backend");
-                setStep(4);
+                setStep(5);
             } else {
                 console.error("Failed to save booking");
                 alert("Errore nel salvataggio della prenotazione");
@@ -129,122 +153,39 @@ const BookingPage = () => {
                 {/* Header */}
                 <div className="bg-green-900 text-white p-8 text-center">
                     <h1 className="text-3xl font-bold uppercase tracking-wider">{t('booking.title')}</h1>
-                    {step < 4 && (
-                        <div className="flex justify-center gap-4 mt-4 text-sm opacity-70">
-                            <span className={step === 1 ? "text-white font-bold" : ""}>1. {t('booking.select_barber')}</span>
+                    {step < 5 && (
+                        <div className="flex justify-center flex-wrap gap-2 sm:gap-4 mt-4 text-xs sm:text-sm opacity-70">
+                            <span className={step === 1 ? "text-white font-bold" : ""}>1. Data & Servizio</span>
                             <span>&gt;</span>
-                            <span className={step === 2 ? "text-white font-bold" : ""}>2. {t('booking.select_date')}</span>
+                            <span className={step === 2 ? "text-white font-bold" : ""}>2. Barbiere</span>
                             <span>&gt;</span>
-                            <span className={step === 3 ? "text-white font-bold" : ""}>3. {t('booking.your_details')}</span>
+                            <span className={step === 3 ? "text-white font-bold" : ""}>3. Orario</span>
+                            <span>&gt;</span>
+                            <span className={step === 4 ? "text-white font-bold" : ""}>4. Dettagli</span>
                         </div>
                     )}
                 </div>
 
                 <div className="p-8 flex-1 flex flex-col">
 
-                    {/* Step 1: Barber Selection */}
+                    {/* Step 1: Date & Service */}
                     {step === 1 && (
-                        <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                {/* Any Barber Option */}
-                                <div
-                                    onClick={() => handleBarberSelect(null)}
-                                    className="cursor-pointer border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center gap-4 hover:border-green-800 hover:bg-green-50 transition-all aspect-[3/4]"
-                                >
-                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <span className="text-2xl text-gray-400">?</span>
-                                    </div>
-                                    <span className="font-bold text-center text-gray-600">{t('booking.any_barber')}</span>
-                                </div>
-
-                                {barbers.map(barber => (
-                                    <div
-                                        key={barber.id}
-                                        onClick={() => handleBarberSelect(barber.id)}
-                                        className="cursor-pointer group relative overflow-hidden rounded-xl aspect-[3/4] shadow-md hover:shadow-xl transition-all"
-                                    >
-                                        <img src={barber.img} alt={barber.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                                            <span className="text-white font-bold uppercase">{barber.name}</span>
-                                            <span className="text-xs text-gray-300">{t(barber.roleKey)}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Login Section */}
-                            <div className="mt-12 border-t pt-8">
-                                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Area Clienti</h2>
-                                <LoginRegister onLoginSuccess={(user) => {
-                                    setBookingData(prev => ({
-                                        ...prev,
-                                        name: user.name,
-                                        surname: user.surname,
-                                        email: user.email,
-                                        phone: user.phone || ''
-                                    }));
-                                    alert(`Benvenuto ${user.name}! I tuoi dati sono stati caricati.`);
-                                }} />
-                            </div>
-                        </>
-                    )}
-
-                    {/* Step 2: Date & Time */}
-                    {step === 2 && (
-                        <div className="max-w-xl mx-auto w-full space-y-8">
+                        <div className="max-w-xl mx-auto w-full space-y-8 animate-fadeIn">
+                            {/* Date Selection */}
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">{t('booking.select_date')}</label>
                                 <input
                                     type="date"
                                     className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 focus:border-transparent outline-none"
                                     onChange={handleDateChange}
+                                    value={bookingData.date}
                                     min={new Date().toISOString().split('T')[0]}
                                 />
                             </div>
 
-                            {bookingData.date && (
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">{t('booking.select_time')}</label>
-                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                                        {timeSlots.map(time => {
-                                            const isReserved = reservedTimes.includes(time);
-                                            return (
-                                                <button
-                                                    key={time}
-                                                    disabled={isReserved}
-                                                    onClick={() => handleTimeSelect(time)}
-                                                    className={`py-2 px-1 rounded border transition-colors text-sm font-medium
-                                                        ${isReserved
-                                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-100'
-                                                            : 'border-gray-200 hover:bg-green-800 hover:text-white'
-                                                        }`}
-                                                >
-                                                    {time}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                    {timeSlots.every(t => reservedTimes.includes(t)) && (
-                                        <p className="text-red-500 text-sm mt-2 font-bold">
-                                            {t('booking.fully_booked', 'Tutto esaurito per questa data. Prova un altro giorno o barbiere.')}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-
-                            <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-green-800 mt-4 underline">
-                                &larr; Back
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Step 3: Details */}
-                    {step === 3 && (
-                        <form onSubmit={handleSubmit} className="max-w-xl mx-auto w-full space-y-6">
-
                             {/* Service Selection */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.select_service')}</label>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">{t('booking.select_service')}</label>
                                 <select
                                     name="service"
                                     required
@@ -261,46 +202,169 @@ const BookingPage = () => {
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.name')}</label>
-                                    <input required name="name" value={bookingData.name} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Mario" />
+                            <button
+                                onClick={() => setStep(2)}
+                                disabled={!bookingData.date || !bookingData.service}
+                                className={`w-full py-4 rounded-lg font-bold text-white transition-colors ${!bookingData.date || !bookingData.service ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700 shadow-lg'}`}
+                            >
+                                {t('booking.next', 'Avanti')} &rarr;
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Step 2: Barber Selection */}
+                    {step === 2 && (
+                        <div className="space-y-6 animate-fadeIn">
+                            <h2 className="text-xl font-bold text-gray-800 text-center mb-6">{t('booking.select_barber')} per il {new Date(bookingData.date).toLocaleDateString()}</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                {/* Any Barber Option */}
+                                <div
+                                    onClick={() => handleBarberSelect(null)}
+                                    className="cursor-pointer border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center gap-4 hover:border-green-800 hover:bg-green-50 transition-all aspect-[3/4]"
+                                >
+                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span className="text-2xl text-gray-400">?</span>
+                                    </div>
+                                    <span className="font-bold text-center text-gray-600">{t('booking.any_barber')}</span>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.surname')}</label>
-                                    <input required name="surname" value={bookingData.surname} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Rossi" />
-                                </div>
+
+                                {barbers
+                                    .filter(b => !dayOffs.some(d => d.barberId === b.id && d.date === bookingData.date)) // Filter out barbers on holiday
+                                    .map(barber => (
+                                        <div
+                                            key={barber.id}
+                                            onClick={() => handleBarberSelect(barber.id)}
+                                            className="cursor-pointer group relative overflow-hidden rounded-xl aspect-[3/4] shadow-md hover:shadow-xl transition-all"
+                                        >
+                                            <img src={barber.img} alt={barber.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
+                                                <span className="text-white font-bold uppercase">{barber.name}</span>
+                                                <span className="text-xs text-gray-300">{t(barber.roleKey)}</span>
+                                            </div>
+                                        </div>
+                                    ))}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.phone')}</label>
-                                    <input required name="phone" type="tel" value={bookingData.phone} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
+                            {barbers.every(b => dayOffs.some(d => d.barberId === b.id && d.date === bookingData.date)) && (
+                                <div className="text-center text-red-500 font-bold py-8">
+                                    Tutti i barbieri sono occupati o in ferie in questa data.
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.email')}</label>
-                                    <input required name="email" type="email" value={bookingData.email} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
-                                </div>
+                            )}
+
+                            <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-green-800 mt-4 underline w-full text-center">
+                                &larr; Indietro
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Step 3: Time Selection */}
+                    {step === 3 && (
+                        <div className="max-w-xl mx-auto w-full space-y-8 animate-fadeIn">
+                            <div className="text-center mb-6">
+                                <h2 className="text-xl font-bold text-gray-800">{t('booking.select_time')}</h2>
+                                <p className="text-gray-500">{bookingData.date} con {getBarberName(bookingData.barber)}</p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.message')}</label>
-                                <textarea name="message" value={bookingData.message} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none h-32"></textarea>
+                                <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                                    {timeSlots.map(time => {
+                                        const isReserved = reservedTimes.includes(time);
+                                        return (
+                                            <button
+                                                key={time}
+                                                disabled={isReserved}
+                                                onClick={() => handleTimeSelect(time)}
+                                                className={`py-2 px-1 rounded border transition-colors text-sm font-medium
+                                                        ${isReserved
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-100'
+                                                        : 'border-gray-200 hover:bg-green-800 hover:text-white'
+                                                    }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {timeSlots.every(t => reservedTimes.includes(t)) && (
+                                    <p className="text-red-500 text-sm mt-2 font-bold text-center">
+                                        {t('booking.fully_booked', 'Tutto esaurito per questa data. Prova un altro giorno o barbiere.')}
+                                    </p>
+                                )}
                             </div>
 
-                            <div className="flex gap-4">
-                                <button type="button" onClick={() => setStep(2)} className="w-1/3 py-4 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50">
-                                    Back
-                                </button>
-                                <button type="submit" className="w-2/3 py-4 bg-green-800 text-white rounded-lg font-bold hover:bg-green-700 transition-colors shadow-lg">
-                                    {t('booking.submit')}
-                                </button>
-                            </div>
-                        </form>
+                            <button onClick={() => setStep(2)} className="text-sm text-gray-500 hover:text-green-800 mt-4 underline w-full text-center">
+                                &larr; Indietro
+                            </button>
+                        </div>
                     )}
 
-                    {/* Step 4: Success */}
+                    {/* Step 4: Details */}
                     {step === 4 && (
+                        <div className="animate-fadeIn">
+                            <div className="mb-6 text-center">
+                                <h2 className="text-xl font-bold text-gray-800">I tuoi dati</h2>
+                                <p className="text-sm text-gray-500">
+                                    Scelto: {getBarberName(bookingData.barber)} | {bookingData.date} @ {bookingData.time} | {t(services.find(s => s.id === bookingData.service)?.name)}
+                                </p>
+                            </div>
+
+                            {/* Login Section */}
+                            <div className="mb-8 border-b pb-6">
+                                <LoginRegister onLoginSuccess={(user) => {
+                                    setBookingData(prev => ({
+                                        ...prev,
+                                        name: user.name,
+                                        surname: user.surname,
+                                        email: user.email,
+                                        phone: user.phone || ''
+                                    }));
+                                    alert(`Benvenuto ${user.name}! I tuoi dati sono stati caricati.`);
+                                }} />
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="max-w-xl mx-auto w-full space-y-6">
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.name')}</label>
+                                        <input required name="name" value={bookingData.name} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Mario" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.surname')}</label>
+                                        <input required name="surname" value={bookingData.surname} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" placeholder="Rossi" />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.phone')}</label>
+                                        <input required name="phone" type="tel" value={bookingData.phone} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.email')}</label>
+                                        <input required name="email" type="email" value={bookingData.email} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">{t('booking.message')}</label>
+                                    <textarea name="message" value={bookingData.message} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-800 outline-none h-32"></textarea>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button type="button" onClick={() => setStep(3)} className="w-1/3 py-4 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50">
+                                        Indietro
+                                    </button>
+                                    <button type="submit" className="w-2/3 py-4 bg-green-800 text-white rounded-lg font-bold hover:bg-green-700 transition-colors shadow-lg">
+                                        {t('booking.submit')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Step 5: Success (previously 4) */}
+                    {step === 5 && (
                         <div className="flex flex-col items-center justify-center flex-1 text-center py-12">
                             <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-8">
                                 <svg className="w-12 h-12 text-green-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">

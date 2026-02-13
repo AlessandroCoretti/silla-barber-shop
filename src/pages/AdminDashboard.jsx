@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { barbers } from '../data/barbers';
+// import { barbers } from '../data/barbers'; // Removed static import
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -20,13 +20,23 @@ const AdminDashboard = () => {
     });
     const [reservedTimes, setReservedTimes] = useState([]);
     const [stats, setStats] = useState({});
+    const [barbers, setBarbers] = useState([]); // Dynamic barbers state
 
     // New State for Day Off Management
     const [daysOff, setDaysOff] = useState([]);
     const [dayOffForm, setDayOffForm] = useState({
         barberId: '',
-        date: ''
+        startDate: '',
+        endDate: ''
     });
+
+    const [newBarberForm, setNewBarberForm] = useState({
+        name: '',
+        roleKey: 'team.roles.barber',
+        img: '',
+        description: ''
+    });
+    const [showAddBarber, setShowAddBarber] = useState(false);
 
     const timeSlots = [
         "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
@@ -73,35 +83,79 @@ const AdminDashboard = () => {
             return;
         }
 
-        // Fetch Bookings
-        fetch('http://localhost:8081/api/bookings')
-            .then(res => res.json())
-            .then(data => {
-                const sortedData = sortBookings(data);
-                setBookings(sortedData);
-                calculateStats(sortedData);
-            })
-            .catch(err => console.error("Error fetching bookings:", err));
+        // Fetch Bookings with Polling
+        const fetchBookings = () => {
+            fetch('http://localhost:8081/api/bookings')
+                .then(res => res.json())
+                .then(data => {
+                    const sortedData = sortBookings(data);
+                    setBookings(sortedData);
+                    calculateStats(sortedData);
+                })
+                .catch(err => console.error("Error fetching bookings:", err));
+        };
+
+        // Fetch Barbers
+        const fetchBarbers = () => {
+            fetch('http://localhost:8081/api/barbers')
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        setBarbers(data);
+                    } else {
+                        console.error("Invalid barbers data:", data);
+                        setBarbers([]);
+                    }
+                })
+                .catch(err => console.error("Error fetching barbers:", err));
+        };
 
         // Fetch Days Off
-        fetch('http://localhost:8081/api/dayoffs')
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setDaysOff(data);
-                }
-            })
-            .catch(err => console.error("Error fetching days off:", err));
+        const fetchDaysOff = () => {
+            fetch('http://localhost:8081/api/dayoffs')
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        setDaysOff(data);
+                    }
+                })
+                .catch(err => console.error("Error fetching days off:", err));
+        };
+
+        fetchBookings(); // Initial fetch
+        fetchBarbers(); // Initial fetch
+        fetchDaysOff(); // Initial fetch
+
+        const interval = setInterval(() => {
+            fetchBookings();
+            fetchDaysOff(); // Also poll days off
+        }, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(interval); // Cleanup
     }, [navigate]);
 
     useEffect(() => {
         if (manualForm.date && manualForm.barber) {
-            fetch(`http://localhost:8081/api/bookings/reserved?date=${manualForm.date}&barber=${manualForm.barber}`)
-                .then(res => res.json())
-                .then(data => {
-                    setReservedTimes(data.map(b => b.time));
-                })
-                .catch(err => console.error("Error fetching reserved slots:", err));
+            const fetchReserved = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8081/api/bookings/reserved?date=${manualForm.date}&barber=${manualForm.barber}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (Array.isArray(data)) {
+                            setReservedTimes(data.map(b => b.time));
+                        } else {
+                            setReservedTimes([]);
+                        }
+                    } else {
+                        console.error("Failed to fetch reserved slots");
+                        setReservedTimes([]);
+                    }
+                } catch (error) {
+                    console.error("Error fetching reserved slots:", error);
+                    setReservedTimes([]);
+                }
+            };
+            fetchReserved();
         } else {
             setReservedTimes([]);
         }
@@ -198,6 +252,11 @@ const AdminDashboard = () => {
 
     const handleAddDayOff = async (e) => {
         e.preventDefault();
+        if (!dayOffForm.barberId || !dayOffForm.startDate || !dayOffForm.endDate) {
+            alert('Seleziona un barbiere e un intervallo di date.');
+            return;
+        }
+
         try {
             const response = await fetch('http://localhost:8081/api/dayoffs', {
                 method: 'POST',
@@ -206,12 +265,12 @@ const AdminDashboard = () => {
             });
 
             if (response.ok) {
-                const newDayOff = await response.json();
-                setDaysOff([...daysOff, newDayOff]);
-                setDayOffForm({ barberId: '', date: '' });
-                alert('Giorno di ferie aggiunto con successo!');
+                alert('Giorni di ferie aggiunti con successo!');
+                const newDaysOff = await response.json();
+                setDaysOff(prev => [...prev, ...newDaysOff]);
+                setDayOffForm({ barberId: '', startDate: '', endDate: '' }); // Reset form
             } else {
-                alert('Errore durante l\'aggiunta del giorno di ferie.');
+                alert('Errore durante l\'aggiunta dei giorni di ferie.');
             }
         } catch (error) {
             console.error("Error adding day off:", error);
@@ -219,7 +278,7 @@ const AdminDashboard = () => {
     };
 
     const handleDeleteDayOff = async (id) => {
-        if (window.confirm('Sei sicuro di voler rimuovere questo giorno di ferie?')) {
+        if (window.confirm('Sei sicuro di voler riattivare questo operatore per la data selezionata?')) {
             try {
                 const response = await fetch(`http://localhost:8081/api/dayoffs/${id}`, {
                     method: 'DELETE',
@@ -228,10 +287,51 @@ const AdminDashboard = () => {
                 if (response.ok) {
                     setDaysOff(daysOff.filter(d => d.id !== id));
                 } else {
-                    alert("Errore durante l'eliminazione");
+                    alert("Errore durante la riattivazione");
                 }
             } catch (error) {
                 console.error("Error deleting day off:", error);
+            }
+        }
+    };
+
+    const handleAddBarber = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8081/api/barbers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newBarberForm)
+            });
+
+            if (response.ok) {
+                const newBarber = await response.json();
+                setBarbers([...barbers, newBarber]);
+                setNewBarberForm({ name: '', roleKey: 'team.roles.barber', img: '' });
+                setShowAddBarber(false);
+                alert('Barbiere aggiunto con successo!');
+            } else {
+                alert('Errore durante l\'aggiunta del barbiere.');
+            }
+        } catch (error) {
+            console.error("Error adding barber:", error);
+        }
+    };
+
+    const handleDeleteBarber = async (id, name) => {
+        if (window.confirm(`Sei sicuro di voler eliminare ${name}? Questa azione è irreversibile.`)) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/barbers/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    setBarbers(barbers.filter(b => b.id !== id));
+                } else {
+                    alert("Errore durante l'eliminazione");
+                }
+            } catch (error) {
+                console.error("Error deleting barber:", error);
             }
         }
     };
@@ -274,8 +374,8 @@ const AdminDashboard = () => {
                     <button onClick={() => setActiveTab('manual')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'manual' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
                         Nuova Prenotazione
                     </button>
-                    <button onClick={() => setActiveTab('dayoff')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'dayoff' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
-                        Gestione Ferie
+                    <button onClick={() => setActiveTab('operators')} className={`px-4 py-2 rounded-md font-medium whitespace-nowrap ${activeTab === 'operators' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}>
+                        Gestione Operatori
                     </button>
                 </div>
 
@@ -441,7 +541,9 @@ const AdminDashboard = () => {
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center space-x-3">
                                                     <img src={barber.img} alt={barber.name} className="w-8 h-8 rounded-full object-cover" />
-                                                    <h4 className="font-medium text-gray-900">{barber.name}</h4>
+                                                    <div>
+                                                        <h4 className="font-medium text-gray-900">{barber.name}</h4>
+                                                    </div>
                                                 </div>
                                                 {barber.isDayOff && (
                                                     <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full border border-red-200">
@@ -536,72 +638,188 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
-                {activeTab === 'dayoff' && (
-                    <div className="max-w-4xl mx-auto space-y-8">
-                        {/* Add Day Off Form */}
-                        <div className="bg-white shadow rounded-lg p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Aggiungi Giorno di Ferie</h3>
-                            <form onSubmit={handleAddDayOff} className="flex flex-col sm:flex-row gap-4 items-end">
-                                <div className="w-full sm:w-1/3">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Barbiere</label>
-                                    <select
-                                        required
-                                        className="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                        value={dayOffForm.barberId}
-                                        onChange={e => setDayOffForm({ ...dayOffForm, barberId: e.target.value })}
-                                    >
-                                        <option value="">Seleziona...</option>
-                                        {barbers.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                                    </select>
-                                </div>
-                                <div className="w-full sm:w-1/3">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        className="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                        value={dayOffForm.date}
-                                        onChange={e => setDayOffForm({ ...dayOffForm, date: e.target.value })}
-                                        min={new Date().toISOString().split('T')[0]}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    className="w-full sm:w-auto px-6 py-2 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Aggiungi
-                                </button>
-                            </form>
+                {activeTab === 'operators' && (
+                    <div className="max-w-6xl mx-auto space-y-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900">Gestione Operatori e Team</h3>
+                                <p className="text-gray-500">Gestisci i membri del team e le loro ferie.</p>
+                            </div>
+                            <button
+                                onClick={() => setShowAddBarber(!showAddBarber)}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-bold"
+                            >
+                                {showAddBarber ? 'Chiudi' : '+ Aggiungi Barbiere'}
+                            </button>
                         </div>
 
+                        {/* Add Barber Form */}
+                        {showAddBarber && (
+                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8 animate-fadeIn">
+                                <h4 className="font-bold text-gray-800 mb-4">Nuovo Membro del Team</h4>
+                                <form onSubmit={handleAddBarber} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Nome"
+                                        required
+                                        className="p-3 border rounded-lg"
+                                        value={newBarberForm.name}
+                                        onChange={e => setNewBarberForm({ ...newBarberForm, name: e.target.value })}
+                                    />
+
+                                    {/* Image Upload Input */}
+                                    <div className="flex flex-col">
+                                        <label className="text-sm text-gray-600 mb-1">Foto Profilo</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            required
+                                            className="p-2 border rounded-lg bg-white"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => {
+                                                        setNewBarberForm({ ...newBarberForm, img: reader.result });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    <select
+                                        className="p-3 border rounded-lg"
+                                        value={newBarberForm.roleKey}
+                                        onChange={e => setNewBarberForm({ ...newBarberForm, roleKey: e.target.value })}
+                                    >
+                                        <option value="team.roles.head_barber">Head Barber</option>
+                                        <option value="team.roles.stylist">Stylist</option>
+                                        <option value="team.roles.barber">Barber</option>
+                                        <option value="team.roles.junior">Junior Barber</option>
+                                    </select>
+
+                                    <textarea
+                                        placeholder="Descrizione (es. specialità, esperienza...)"
+                                        className="p-3 border rounded-lg md:col-span-2"
+                                        rows="3"
+                                        value={newBarberForm.description || ''}
+                                        onChange={e => setNewBarberForm({ ...newBarberForm, description: e.target.value })}
+                                    />
+
+                                    <button type="submit" className="bg-green-600 text-white font-bold p-3 rounded-lg hover:bg-green-700 md:col-span-2">
+                                        Salva
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+
+                        {/* Barber Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                            {barbers.map(barber => (
+                                <div
+                                    key={barber.id}
+                                    className={`relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden border-2 ${dayOffForm.barberId === barber.id ? 'border-indigo-600 ring-2 ring-indigo-200' : 'border-transparent'}`}
+                                >
+                                    <div
+                                        className="aspect-square relative cursor-pointer"
+                                        onClick={() => {
+                                            setDayOffForm(prev => ({ ...prev, barberId: barber.id }));
+                                        }}
+                                    >
+                                        <img src={barber.img} alt={barber.name} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                                            <h4 className="text-white font-bold text-lg">{barber.name}</h4>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteBarber(barber.id, barber.name);
+                                        }}
+                                        className="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-700 shadow-md z-10"
+                                        title="Elimina Barbiere"
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Date Selection Form (Visible when a barber is selected) */}
+                        {dayOffForm.barberId && (
+                            <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 animate-fadeIn">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4">
+                                    Imposta Ferie per <span className="text-indigo-600">{getBarberName(dayOffForm.barberId)}</span>
+                                </h4>
+                                <form onSubmit={handleAddDayOff} className="flex flex-col md:flex-row gap-4 items-end">
+                                    <div className="w-full md:w-1/3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Dal</label>
+                                        <input
+                                            type="date"
+                                            required
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                            value={dayOffForm.startDate}
+                                            onChange={e => setDayOffForm({ ...dayOffForm, startDate: e.target.value })}
+                                            min={new Date().toISOString().split('T')[0]}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Al</label>
+                                        <input
+                                            type="date"
+                                            required
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                            value={dayOffForm.endDate}
+                                            onChange={e => setDayOffForm({ ...dayOffForm, endDate: e.target.value })}
+                                            min={dayOffForm.startDate || new Date().toISOString().split('T')[0]}
+                                        />
+                                    </div>
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <button
+                                            type="submit"
+                                            className="flex-1 md:flex-none px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-md"
+                                        >
+                                            Disattiva
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setDayOffForm({ barberId: '', startDate: '', endDate: '' })}
+                                            className="px-4 py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                                        >
+                                            Annulla
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+
                         {/* List of Days Off */}
-                        <div className="bg-white shadow rounded-lg overflow-hidden">
-                            <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                    Giorni di Ferie Pianificati
+                        <div className="bg-white shadow rounded-lg overflow-hidden mt-8">
+                            <div className="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
+                                <h3 className="text-lg leading-6 font-bold text-gray-900">
+                                    Operatori Disattivati / In Ferie
                                 </h3>
                             </div>
                             {daysOff.length === 0 ? (
                                 <div className="p-8 text-center text-gray-500">
-                                    Nessun giorno di ferie pianificato.
+                                    Nessuna disattivazione pianificata.
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-gray-200">
-                                    {daysOff.map((day) => (
+                                <ul className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
+                                    {daysOff.sort((a, b) => new Date(a.date) - new Date(b.date)).map((day) => (
                                         <li key={day.id} className="px-4 py-4 sm:px-6 hover:bg-gray-50 flex justify-between items-center transition duration-150 ease-in-out">
                                             <div className="flex items-center space-x-4">
-                                                <div className="flex-shrink-0">
-                                                    <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100">
-                                                        <span className="text-indigo-800 font-bold text-lg">
-                                                            {new Date(day.date).getDate()}
-                                                        </span>
-                                                    </span>
-                                                </div>
+                                                <img
+                                                    src={barbers.find(b => b.id === day.barberId)?.img}
+                                                    alt="Barber"
+                                                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                                />
                                                 <div>
-                                                    <p className="text-sm font-medium text-indigo-600 truncate">
+                                                    <p className="text-sm font-bold text-gray-900">
                                                         {getBarberName(day.barberId)}
                                                     </p>
-                                                    <p className="flex items-center text-sm text-gray-500">
+                                                    <p className="text-sm text-gray-500">
                                                         {new Date(day.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                                                     </p>
                                                 </div>
@@ -609,9 +827,9 @@ const AdminDashboard = () => {
                                             <div>
                                                 <button
                                                     onClick={() => handleDeleteDayOff(day.id)}
-                                                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                                    className="text-red-500 hover:text-red-700 font-medium text-sm hover:underline"
                                                 >
-                                                    Rimuovi
+                                                    Riattiva
                                                 </button>
                                             </div>
                                         </li>

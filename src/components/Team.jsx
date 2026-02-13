@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
 
-import { barbers } from '../data/barbers';
+// import { barbers } from '../data/barbers'; // Removed
 
 const Team = () => {
     const { t } = useTranslation();
@@ -13,6 +13,14 @@ const Team = () => {
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
     const [activeBarber, setActiveBarber] = useState(null);
     const [isHovering, setIsHovering] = useState(false);
+    const [barbers, setBarbers] = useState([]); // Dynamic barbers
+
+    useEffect(() => {
+        fetch('http://localhost:8081/api/barbers')
+            .then(res => res.json())
+            .then(data => setBarbers(data))
+            .catch(err => console.error("Error fetching barbers:", err));
+    }, []);
 
     useEffect(() => {
         const moveCursor = (e) => {
@@ -91,9 +99,14 @@ const Team = () => {
                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
                             </div>
-                            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
                                 <h3 className="text-2xl font-bold uppercase">{barber.name}</h3>
-                                <p className="text-sm opacity-80 uppercase tracking-widest">{t(barber.roleKey)}</p>
+                                <p className="text-sm opacity-80 uppercase tracking-widest mb-2">{t(barber.roleKey)}</p>
+                                {barber.description && (
+                                    <p className="text-xs text-gray-300 line-clamp-3 mt-2 font-light">
+                                        {barber.description}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     ))}
