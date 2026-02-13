@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bookings")
-@CrossOrigin(origins = "http://localhost:5173") // Allow React Frontend
 public class BookingController {
 
     @Autowired
@@ -47,7 +46,7 @@ public class BookingController {
             bookingRepository.delete(booking);
         });
     }
-    
+
     // Simple Admin Auth Simulation
     @PostMapping("/auth")
     public boolean login(@RequestBody Map<String, String> credentials) {

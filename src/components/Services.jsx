@@ -61,23 +61,11 @@ const Services = () => {
                 }
             );
 
+            // Mobile: No pinning, just natural scroll
+            // The active index will be set by mouse enter (touch) or we can leave it default
             if (isMobile) {
-                ScrollTrigger.create({
-                    trigger: el,
-                    start: "top top",
-                    end: `+=${services.length * 100}%`,
-                    pin: true,
-                    scrub: true,
-                    onUpdate: (self) => {
-                        const progress = self.progress;
-                        const idx = Math.min(
-                            Math.floor(progress * services.length),
-                            services.length - 1
-                        );
-                        // Only update state if it changes to avoid excessive re-renders
-                        setActiveIndex(prev => prev !== idx ? idx : prev);
-                    }
-                });
+                // Optional: We could add a simple scroll trigger just to update the index without pinning
+                // But for now, ensuring smooth scroll is priority.
             }
         });
 

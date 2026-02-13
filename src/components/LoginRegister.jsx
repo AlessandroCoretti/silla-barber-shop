@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_BASE_URL } from '../config';
 
 const LoginRegister = ({ onLoginSuccess, showAlert }) => {
     const { t } = useTranslation();
@@ -22,8 +23,8 @@ const LoginRegister = ({ onLoginSuccess, showAlert }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-        const url = `http://localhost:8081${endpoint}`;
+        const endpoint = isLogin ? '/auth/login' : '/auth/register';
+        const url = `${API_BASE_URL}${endpoint}`;
 
         try {
             const response = await fetch(url, {
@@ -63,7 +64,7 @@ const LoginRegister = ({ onLoginSuccess, showAlert }) => {
 
     const executeDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/auth/${loggedInUser.id}`, {
+            const response = await fetch(`${API_BASE_URL}/auth/${loggedInUser.id}`, {
                 method: 'DELETE'
             });
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ const AdminLogin = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8081/api/bookings/auth', {
+            const response = await fetch(`${API_BASE_URL}/bookings/auth`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

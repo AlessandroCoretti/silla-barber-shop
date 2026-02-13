@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import LoginRegister from '../components/LoginRegister';
 import CustomAlert from '../components/CustomAlert';
+import { API_BASE_URL } from '../config';
 
 const BookingPage = () => {
     const { t } = useTranslation();
@@ -43,13 +44,13 @@ const BookingPage = () => {
 
     useEffect(() => {
         // Fetch Barbers
-        fetch('http://localhost:8081/api/barbers')
+        fetch(`${API_BASE_URL}/barbers`)
             .then(res => res.json())
             .then(data => setBarbers(data))
             .catch(err => console.error("Error fetching barbers:", err));
 
         // Fetch Day Offs to filter barbers
-        fetch('http://localhost:8081/api/dayoffs')
+        fetch(`${API_BASE_URL}/dayoffs`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -92,7 +93,7 @@ const BookingPage = () => {
 
     useEffect(() => {
         if (bookingData.date && bookingData.barber) {
-            fetch(`http://localhost:8081/api/bookings/reserved?date=${bookingData.date}&barber=${bookingData.barber}`)
+            fetch(`${API_BASE_URL}/bookings/reserved?date=${bookingData.date}&barber=${bookingData.barber}`)
                 .then(res => res.json())
                 .then(data => {
                     setReservedTimes(data.map(b => b.time));
@@ -131,7 +132,7 @@ const BookingPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8081/api/bookings', {
+            const response = await fetch(`${API_BASE_URL}/bookings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 // import { barbers } from '../data/barbers'; // Removed static import
 
 const AdminDashboard = () => {
@@ -86,7 +87,7 @@ const AdminDashboard = () => {
 
         // Fetch Bookings with Polling
         const fetchBookings = () => {
-            fetch('http://localhost:8081/api/bookings')
+            fetch(`${API_BASE_URL}/bookings`)
                 .then(res => res.json())
                 .then(data => {
                     const sortedData = sortBookings(data);
@@ -98,7 +99,7 @@ const AdminDashboard = () => {
 
         // Fetch Barbers
         const fetchBarbers = () => {
-            fetch('http://localhost:8081/api/barbers')
+            fetch(`${API_BASE_URL}/barbers`)
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
@@ -113,7 +114,7 @@ const AdminDashboard = () => {
 
         // Fetch Days Off
         const fetchDaysOff = () => {
-            fetch('http://localhost:8081/api/dayoffs')
+            fetch(`${API_BASE_URL}/dayoffs`)
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
@@ -139,7 +140,7 @@ const AdminDashboard = () => {
         if (manualForm.date && manualForm.barber) {
             const fetchReserved = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8081/api/bookings/reserved?date=${manualForm.date}&barber=${manualForm.barber}`);
+                    const response = await fetch(`${API_BASE_URL}/bookings/reserved?date=${manualForm.date}&barber=${manualForm.barber}`);
                     if (response.ok) {
                         const data = await response.json();
                         if (Array.isArray(data)) {
@@ -205,7 +206,7 @@ const AdminDashboard = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Sei sicuro di voler eliminare questa prenotazione?')) {
             try {
-                const response = await fetch(`http://localhost:8081/api/bookings/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
                     method: 'DELETE',
                 });
 
@@ -228,7 +229,7 @@ const AdminDashboard = () => {
             const serviceObj = services.find(s => s.id === manualForm.service);
             const bookingPayload = { ...manualForm, price: serviceObj ? serviceObj.price : 0 };
 
-            const response = await fetch('http://localhost:8081/api/bookings', {
+            const response = await fetch(`${API_BASE_URL}/bookings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingPayload)
@@ -259,7 +260,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8081/api/dayoffs', {
+            const response = await fetch(`${API_BASE_URL}/dayoffs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dayOffForm)
@@ -281,7 +282,7 @@ const AdminDashboard = () => {
     const handleDeleteDayOff = async (id) => {
         if (window.confirm('Sei sicuro di voler riattivare questo operatore per la data selezionata?')) {
             try {
-                const response = await fetch(`http://localhost:8081/api/dayoffs/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/dayoffs/${id}`, {
                     method: 'DELETE',
                 });
 
@@ -299,7 +300,7 @@ const AdminDashboard = () => {
     const handleAddBarber = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8081/api/barbers', {
+            const response = await fetch(`${API_BASE_URL}/barbers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newBarberForm)
@@ -322,7 +323,7 @@ const AdminDashboard = () => {
     const handleDeleteBarber = async (id, name) => {
         if (window.confirm(`Sei sicuro di voler eliminare ${name}? Questa azione è irreversibile.`)) {
             try {
-                const response = await fetch(`http://localhost:8081/api/barbers/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/barbers/${id}`, {
                     method: 'DELETE',
                 });
 

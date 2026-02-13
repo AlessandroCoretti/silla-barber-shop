@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-
+import { API_BASE_URL } from '../config';
 
 const TeamPage = () => {
     const { t, i18n } = useTranslation();
     const [barbers, setBarbers] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8081/api/barbers')
+        fetch(`${API_BASE_URL}/barbers`)
             .then(res => res.json())
             .then(data => setBarbers(data))
             .catch(err => console.error("Error fetching barbers:", err));
