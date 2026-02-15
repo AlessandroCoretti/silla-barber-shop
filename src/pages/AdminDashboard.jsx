@@ -179,6 +179,7 @@ const AdminDashboard = () => {
 
         const newStats = {};
 
+        // Initialize stats for each barber (using lowercase ID for matching)
         barbers.forEach(barber => {
             newStats[barber.id] = { daily: 0, weekly: 0, monthly: 0 };
         });
@@ -186,13 +187,33 @@ const AdminDashboard = () => {
         data.forEach(booking => {
             if (!booking.date || !booking.price) return;
 
-            const bookingDate = new Date(booking.date).getTime();
+            // Robust Date Parsing: Convert UTC string (YYYY-MM-DD) to Local Midnight
+            const dateParts = booking.date.split('-');
+            const year = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1; // Months are 0-indexed
+            const day = parseInt(dateParts[2]);
+
+            const bookingDateLocal = new Date(year, month, day).getTime();
             const price = parseFloat(booking.price);
 
-            if (newStats[booking.barber]) {
-                if (bookingDate >= startOfDay) newStats[booking.barber].daily += price;
-                if (bookingDate >= startOfWeek) newStats[booking.barber].weekly += price;
-                if (bookingDate >= startOfMonth) newStats[booking.barber].monthly += price;
+            // Normalize Barber ID comparison
+            let barberId = booking.barber;
+            // If the exact ID isn't found, try lowercase
+            if (!newStats[barberId] && typeof barberId === 'string') {
+                const lowerId = barberId.toLowerCase();
+                // Check if any barber has this ID in lowercase (handling potential casing mismatch)
+                const matchedBarber = barbers.find(b => b.id.toLowerCase() === lowerId);
+                if (matchedBarber) {
+                    barberId = matchedBarber.id;
+                }
+            }
+
+            if (newStats[barberId]) {
+                if (bookingDateLocal >= startOfDay) newStats[barberId].daily += price;
+                if (bookingDateLocal >= startOfWeek) newStats[barberId].weekly += price;
+                if (bookingDateLocal >= startOfMonth) newStats[barberId].monthly += price;
+            } else {
+                console.warn(`Barber ID mismatch for booking ${booking.id}: ${booking.barber}`);
             }
         });
         setStats(newStats);
