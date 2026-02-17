@@ -42,10 +42,10 @@
     "team": {
         "title": "Conosci i nostri Barbieri",
         "roles": {
-            "head_barber": "Capo Barbiere",
-            "stylist": "Stilista",
+            "head_barber": "Barbiere",
+            "stylist": "Barbiere",
             "barber": "Barbiere",
-            "junior": "Junior"
+            "junior": "Barbiere"
         },
         "discover_more": "Scopri di più su",
         "descriptions": {

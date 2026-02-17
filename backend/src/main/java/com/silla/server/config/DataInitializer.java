@@ -16,9 +16,11 @@ public class DataInitializer implements CommandLineRunner {
         public void run(String... args) throws Exception {
                 // Update Lele
                 Barber lele = barberRepository.findById("lele").orElse(new Barber("lele", "Lele",
-                                "team.roles.head_barber",
-                                "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                                "team.roles.barber",
+                                "/assets/barber_placeholder.svg",
                                 "", ""));
+                lele.setRoleKey("team.roles.barber");
+                lele.setImg("/assets/barber_placeholder.svg");
                 lele.setDescriptionIt(
                                 "Maestro del taglio classico e moderno. Con oltre 15 anni di esperienza, Lele guida il team con passione e precisione.");
                 lele.setDescriptionEn(
@@ -27,9 +29,11 @@ public class DataInitializer implements CommandLineRunner {
 
                 // Update Riccardo
                 Barber riccardo = barberRepository.findById("riccardo").orElse(new Barber("riccardo", "Riccardo",
-                                "team.roles.stylist",
-                                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop",
+                                "team.roles.barber",
+                                "/assets/barber_placeholder.svg",
                                 "", ""));
+                riccardo.setRoleKey("team.roles.barber");
+                riccardo.setImg("/assets/barber_placeholder.svg");
                 riccardo.setDescriptionIt(
                                 "Specialista in sfumature e barbe scolpite. La sua attenzione ai dettagli è maniacale.");
                 riccardo.setDescriptionEn(
@@ -39,8 +43,10 @@ public class DataInitializer implements CommandLineRunner {
                 // Update Jurgen
                 Barber jurgen = barberRepository.findById("jurgen").orElse(new Barber("jurgen", "Jurgen",
                                 "team.roles.barber",
-                                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
+                                "/assets/barber_placeholder.svg",
                                 "", ""));
+                jurgen.setRoleKey("team.roles.barber");
+                jurgen.setImg("/assets/barber_placeholder.svg");
                 jurgen.setDescriptionIt(
                                 "Creativo e sempre aggiornato sulle ultime tendenze. Jurgen trasforma ogni taglio in un'opera d'arte.");
                 jurgen.setDescriptionEn(
@@ -49,9 +55,11 @@ public class DataInitializer implements CommandLineRunner {
 
                 // Update Stefano
                 Barber stefano = barberRepository.findById("stefano").orElse(new Barber("stefano", "Stefano",
-                                "team.roles.junior",
-                                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
+                                "team.roles.barber",
+                                "/assets/barber_placeholder.svg",
                                 "", ""));
+                stefano.setRoleKey("team.roles.barber");
+                stefano.setImg("/assets/barber_placeholder.svg");
                 stefano.setDescriptionIt(
                                 "Giovane talento con una mano ferma e un occhio per lo stile. Il futuro del barbering.");
                 stefano.setDescriptionEn(

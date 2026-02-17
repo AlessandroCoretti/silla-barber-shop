@@ -92,7 +92,7 @@ const AdminDashboard = () => {
                 .then(data => {
                     const sortedData = sortBookings(data);
                     setBookings(sortedData);
-                    calculateStats(sortedData);
+                    // calculateStats(sortedData); // Removed
                 })
                 .catch(err => console.error("Error fetching bookings:", err));
         };
@@ -163,8 +163,8 @@ const AdminDashboard = () => {
         }
     }, [manualForm.date, manualForm.barber]);
 
-    const calculateStats = (data) => {
-        if (!Array.isArray(data)) return;
+    useEffect(() => {
+        if (!barbers.length || !bookings.length) return;
 
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -184,7 +184,7 @@ const AdminDashboard = () => {
             newStats[barber.id] = { daily: 0, weekly: 0, monthly: 0 };
         });
 
-        data.forEach(booking => {
+        bookings.forEach(booking => {
             if (!booking.date || !booking.price) return;
 
             // Robust Date Parsing: Convert UTC string (YYYY-MM-DD) to Local Midnight
@@ -212,12 +212,10 @@ const AdminDashboard = () => {
                 if (bookingDateLocal >= startOfDay) newStats[barberId].daily += price;
                 if (bookingDateLocal >= startOfWeek) newStats[barberId].weekly += price;
                 if (bookingDateLocal >= startOfMonth) newStats[barberId].monthly += price;
-            } else {
-                console.warn(`Barber ID mismatch for booking ${booking.id}: ${booking.barber}`);
             }
         });
         setStats(newStats);
-    };
+    }, [bookings, barbers]);
 
     const handleLogout = () => {
         localStorage.removeItem('silla_admin_auth');
@@ -234,7 +232,7 @@ const AdminDashboard = () => {
                 if (response.ok) {
                     const updatedBookings = bookings.filter(b => b.id !== id);
                     setBookings(updatedBookings);
-                    calculateStats(updatedBookings);
+                    // calculateStats(updatedBookings); // Removed
                 } else {
                     alert("Errore durante l'eliminazione");
                 }
@@ -262,7 +260,7 @@ const AdminDashboard = () => {
                 const updatedBookings = sortBookings([...bookings, newBooking]);
 
                 setBookings(updatedBookings);
-                calculateStats(updatedBookings);
+                // calculateStats(updatedBookings); // Removed
                 setManualForm({ barber: '', service: '', date: '', time: '', name: '', surname: '', email: '', phone: '', price: 0 });
                 setActiveTab('bookings');
             } else {

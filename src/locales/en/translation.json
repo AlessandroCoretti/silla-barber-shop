@@ -42,10 +42,10 @@
     "team": {
         "title": "Meet our Barbers",
         "roles": {
-            "head_barber": "Head Barber",
-            "stylist": "Stylist",
+            "head_barber": "Barber",
+            "stylist": "Barber",
             "barber": "Barber",
-            "junior": "Junior"
+            "junior": "Barber"
         },
         "discover_more": "Discover more about",
         "descriptions": {
