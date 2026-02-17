@@ -112,7 +112,13 @@
         "chosen_summary": "Scelto:",
         "save_error": "Errore nel salvataggio della prenotazione",
         "connection_error": "Errore di connessione al server",
-        "fully_booked_day": "Tutti i barbieri sono occupati o in ferie in questa data."
+        "fully_booked_day": "Tutti i barbieri sono occupati o in ferie in questa data.",
+        "services": {
+            "cut": "Taglio Uomo",
+            "beard": "Rasatura Barba",
+            "combo": "Taglio + Barba",
+            "kid": "Taglio Bambino"
+        }
     },
     "auth": {
         "login_title": "Accedi per prenotare più velocemente",

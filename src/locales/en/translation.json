@@ -112,7 +112,13 @@
         "chosen_summary": "Chosen:",
         "save_error": "Error saving booking",
         "connection_error": "Server connection error",
-        "fully_booked_day": "All barbers are booked or on holiday on this date."
+        "fully_booked_day": "All barbers are booked or on holiday on this date.",
+        "services": {
+            "cut": "Men's Cut",
+            "beard": "Beard Trim",
+            "combo": "Cut + Beard",
+            "kid": "Kid's Cut"
+        }
     },
     "auth": {
         "login_title": "Login to book faster",
